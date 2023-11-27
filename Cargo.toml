@@ -1,0 +1,12 @@
+[package]
+name = "adventofcode-2023"
+version = "0.1.0"
+authors = []
+rust-version = "1.62"
+edition="2021"
+
+[dependencies]
+
+[lib]
+name = "aoc"
+path = "./lib/rust/lib.rs"
