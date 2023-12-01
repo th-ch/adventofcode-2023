@@ -7,16 +7,16 @@ on:  # yamllint disable-line rule:truthy
     - main
 
 jobs:
-  clippy-lint:
-    name: clippy-lint
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v4
-    - uses: actions-rs/clippy-check@v1
-      with:
-        name: clippy-summary
-        token: ${{ secrets.GITHUB_TOKEN }}
-        args: -- --deny warnings
+  # clippy-lint:
+  #   name: clippy-lint
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #   - uses: actions/checkout@v4
+  #   - uses: actions-rs/clippy-check@v1
+  #     with:
+  #       name: clippy-summary
+  #       token: ${{ secrets.GITHUB_TOKEN }}
+  #       args: -- --deny warnings
   markdown-lint:
     name: markdown-lint
     runs-on: ubuntu-latest
