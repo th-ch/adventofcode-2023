@@ -46,7 +46,7 @@ jobs:
     #     nim-version: 1.4.8
     - uses: goto-bus-stop/setup-zig@v2
       with:
-        version: 0.10.0
+        version: 0.12.0+39a966b0a
     # TODO: switch back to vlang/setup-v@v1 when it supports not compiling everything from scratch every time
     # - name: Install vlang
     #   run: |

@@ -22,7 +22,7 @@ pub fn main() !void {
     const start: i128 = std.time.nanoTimestamp(); // start time
     const answer = run(input); // compute answer
     const end: i128 = std.time.nanoTimestamp();
-    const elapsed_nano = @intToFloat(f64, end - start);
+    const elapsed_nano: f64 = @floatFromInt(end - start);
     const elapsed_milli = elapsed_nano / 1_000_000.0;
     try stdout.print("_duration:{d}\n{}\n", .{ elapsed_milli, answer }); // emit actual lines parsed by AOC
 }
