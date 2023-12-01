@@ -37,24 +37,25 @@ fn try_match(input: &[u8]) -> Option<isize> {
 
 fn run(input: &str) -> isize {
     let mut res = 0;
-    for line in input.lines() {
-        let mut first = true;
-        let mut last_val = 0;
-        let bytes = line.as_bytes();
-        let mut cur = 0;
-        while cur < bytes.len() {
-            if let Some(val) = try_match(&bytes[cur..]) {
-                last_val = val;
-                if first {
-                    res += 10*last_val;
-                    first = false;
-                }
+    let bytes = input.as_bytes();
+    let mut first = true;
+    let mut last_val = 0;
+    let mut cur = 0;
+    while cur < bytes.len() {
+        if bytes[cur] == b'\n' {
+            res += last_val;
+            first = true;
+            last_val = 0;
+        } else if let Some(val) = try_match(&bytes[cur..]) {
+            last_val = val;
+            if first {
+                res += 10*last_val;
+                first = false;
             }
-            cur += 1;
         }
-        res += last_val;
+        cur += 1;
     }
-    res
+    res + last_val
 }
 
 #[cfg(test)]

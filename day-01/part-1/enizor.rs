@@ -11,21 +11,23 @@ fn main() {
 
 fn run(input: &str) -> isize {
     let mut res = 0;
-    for line in input.lines() {
-        let mut first = true;
-        let mut last_val = 0;
-        for c in line.bytes() {
-            if c >= b'0' && c <= b'9' {
-                last_val = (c - b'0') as isize;
-                if first {
-                    res += 10*last_val;
-                    first = false;
-                }
+    let mut first = true;
+    let mut last_val = 0;
+    for &c in input.as_bytes() {
+        if c == b'\n' {
+            res += last_val;
+            first = true;
+            last_val = 0;
+        } else if c > b'0' && c <= b'9' {
+            last_val = (c - b'0') as isize;
+            if first {
+                res += 10*last_val;
+                first = false;
             }
         }
-        res += last_val;
     }
-    res
+    // ensure it works even if no trailing \n
+    res + last_val
 }
 
 #[cfg(test)]
