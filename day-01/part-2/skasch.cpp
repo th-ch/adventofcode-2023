@@ -1,5 +1,4 @@
 #include <chrono>
-#include <format>
 #include <iostream>
 #include <span>
 #include <sstream>
@@ -104,7 +103,7 @@ std::string Run(const std::string& input) {
     }
   }
   result += last_digit_found;
-  return std::format("{}", result);
+  return std::to_string(result);
 }
 
 int main(int argc, char* argv[]) {
