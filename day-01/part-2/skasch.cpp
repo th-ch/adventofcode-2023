@@ -4,7 +4,7 @@
 #include <sstream>
 #include <string>
 
-static constexpr int kBase = 2 << 5;  // > 27
+static constexpr int kBase = 1 << 5;  // > 27
 static constexpr int kBase2 = kBase * kBase;
 static constexpr int kBase3 = kBase2 * kBase;
 static constexpr int kBase4 = kBase3 * kBase;
