@@ -18,7 +18,7 @@ const SPELLED: [&[u8]; 9] = [
     "six".as_bytes(),
     "seven".as_bytes(),
     "eight".as_bytes(),
-    "nine".as_bytes()
+    "nine".as_bytes(),
 ];
 
 fn try_match(input: &[u8]) -> Option<isize> {
@@ -49,7 +49,7 @@ fn run(input: &str) -> isize {
         } else if let Some(val) = try_match(&bytes[cur..]) {
             last_val = val;
             if first {
-                res += 10*last_val;
+                res += 10 * last_val;
                 first = false;
             }
         }
@@ -64,12 +64,15 @@ mod tests {
 
     #[test]
     fn run_test() {
-        assert_eq!(run("two1nine
+        assert_eq!(
+            run("two1nine
 eightwothree
 abcone2threexyz
 xtwone3four
 4nineeightseven2
 zoneight234
-7pqrstsixteen"), 281)
+7pqrstsixteen"),
+            281
+        )
     }
 }

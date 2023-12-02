@@ -21,7 +21,7 @@ fn run(input: &str) -> isize {
         } else if c > b'0' && c <= b'9' {
             last_val = (c - b'0') as isize;
             if first {
-                res += 10*last_val;
+                res += 10 * last_val;
                 first = false;
             }
         }
@@ -36,9 +36,12 @@ mod tests {
 
     #[test]
     fn run_test() {
-        assert_eq!(run("1abc2
+        assert_eq!(
+            run("1abc2
 pqr3stu8vwx
 a1b2c3d4e5f
-treb7uchet"), 142)
+treb7uchet"),
+            142
+        )
     }
 }
