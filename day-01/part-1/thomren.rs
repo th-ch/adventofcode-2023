@@ -14,15 +14,21 @@ fn run(input: &str) -> usize {
 }
 
 fn get_calibration_value(line: &str) -> usize {
-    let values = line
-        .chars()
-        .filter(|&c| c >= '0' && c <= '9')
-        .collect::<Vec<char>>();
-    if values.len() == 0 {
-        return 0;
+    let (mut first, mut last) = (0, 0);
+    let bytes  = line.as_bytes();
+    for &byte in bytes.iter() {
+        if (b'0'..=b'9').contains(&byte) {
+            first = (byte - b'0') as usize;
+            break;
+        }
     }
-    return (*values.first().unwrap() as usize - '0' as usize) * 10
-        + (*values.last().unwrap() as usize - '0' as usize);
+    for &byte in bytes.iter().rev() {
+        if (b'0'..=b'9').contains(&byte) {
+            last = (byte - b'0') as usize;
+            break;
+        }
+    }
+    first * 10 + last
 }
 
 #[cfg(test)]

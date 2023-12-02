@@ -9,48 +9,42 @@ fn main() {
     println!("{}", output);
 }
 
+static NUMBERS: [&str; 9] = ["one", "two", "three", "four", "five", "six", "seven", "eight", "nine"];
+
 fn run(input: &str) -> usize {
-    input.lines().map(get_calibration_value).sum()
+    input.lines().map(|line| get_first_number(line) * 10 + get_last_number(line)).sum()
 }
 
-fn get_calibration_value(line: &str) -> usize {
-    let values = parse_numbers(line);
-    if values.len() == 0 {
-        return 0;
-    }
-    return *values.first().unwrap() * 10 + *values.last().unwrap();
-}
-
-fn parse_numbers(line: &str) -> Vec<usize> {
-    let mut numbers = vec![];
-    let chars = line.chars().collect::<Vec<char>>();
-    for i in 0..chars.len() {
-        if chars[i] >= '0' && chars[i] <= '9' {
-            numbers.push(chars[i] as usize - '0' as usize);
+fn get_first_number(line: &str) -> usize {
+    let bytes = line.as_bytes();
+    for i in 0..bytes.len() {
+        if bytes[i] >= b'0' && bytes[i] <= b'9' {
+            return (bytes[i] - b'0') as usize;
         } else {
-            let suffix = chars[i..chars.len()].iter().collect::<String>();
-            if suffix.starts_with("one") {
-                numbers.push(1);
-            } else if suffix.starts_with("two") {
-                numbers.push(2);
-            } else if suffix.starts_with("three") {
-                numbers.push(3);
-            } else if suffix.starts_with("four") {
-                numbers.push(4);
-            } else if suffix.starts_with("five") {
-                numbers.push(5);
-            } else if suffix.starts_with("six") {
-                numbers.push(6);
-            } else if suffix.starts_with("seven") {
-                numbers.push(7);
-            } else if suffix.starts_with("eight") {
-                numbers.push(8);
-            } else if suffix.starts_with("nine") {
-                numbers.push(9);
+            for j in 0..NUMBERS.len() {
+                if bytes[i..].starts_with(NUMBERS[j].as_bytes()) {
+                    return j as usize + 1;
+                }
             }
         }
     }
-    numbers
+    0
+}
+
+fn get_last_number(line:&str) -> usize {
+    let bytes = line.as_bytes();
+    for i in (0..bytes.len()).rev() {
+        if bytes[i] >= b'0' && bytes[i] <= b'9' {
+            return (bytes[i] - b'0') as usize;
+        } else {
+            for j in 0..NUMBERS.len() {
+                if bytes[i..].starts_with(NUMBERS[j].as_bytes()) {
+                    return  j as usize + 1;
+                }
+            }
+        }
+    }
+    0
 }
 
 #[cfg(test)]
