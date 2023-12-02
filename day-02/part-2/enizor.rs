@@ -1,3 +1,4 @@
+use aoc::enizor::utils::*;
 use std::env::args;
 use std::time::Instant;
 
@@ -38,21 +39,6 @@ fn game_power(game: &[u8]) -> usize {
         *max = std::cmp::max(*max, number);
     }
     max_r * max_g * max_b
-}
-
-fn consume_numeral(bytes: &[u8]) -> usize {
-    let mut res = 0;
-    let mut cur = 0;
-    while cur < bytes.len() {
-        if bytes[cur] >= b'0' && bytes[cur] <= b'9' {
-            res *= 10;
-            res += (bytes[cur] - b'0') as usize;
-            cur += 1;
-        } else {
-            break;
-        }
-    }
-    res
 }
 
 #[cfg(test)]
