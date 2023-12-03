@@ -47,6 +47,11 @@ jobs:
     - uses: goto-bus-stop/setup-zig@v2
       with:
         version: 0.12.0-dev.1768+39a966b0a
+
+    - uses: jiro4989/setup-nim-action@v1
+      with:
+        nim-version: '2.0.0'
+
     # TODO: switch back to vlang/setup-v@v1 when it supports not compiling everything from scratch every time
     # - name: Install vlang
     #   run: |
