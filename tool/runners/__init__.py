@@ -11,7 +11,7 @@ from tool.runners.go import SubmissionGo
 from tool.runners.intcode import SubmissionIntcode
 from tool.runners.java import SubmissionJava
 from tool.runners.julia import SubmissionJulia
-# from tool.runners.nim import SubmissionNim
+from tool.runners.nim import SubmissionNim
 from tool.runners.php import SubmissionPHP
 from tool.runners.python import SubmissionPy
 from tool.runners.ruby import SubmissionRb
@@ -80,8 +80,8 @@ def load_submission_runnable(path, language):
         return SubmissionBash(path)
     elif language == "jl":
         return SubmissionJulia(path)
-    # elif language == "nim":
-    #     return SubmissionNim(path)
+    elif language == "nim":
+         return SubmissionNim(path)
     # elif language == "v":
     #     return SubmissionV(path)
     elif language == "zig":
