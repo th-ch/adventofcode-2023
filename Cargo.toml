@@ -2,8 +2,8 @@
 name = "adventofcode-2023"
 version = "0.1.0"
 authors = []
-rust-version = "1.62"
-edition="2021"
+rust-version = "1.74"
+edition = "2021"
 
 [dependencies]
 
@@ -50,3 +50,11 @@ path = "./day-01/part-1/thomren.rs"
 [[bin]]
 name = "day-01-part-2-thomren"
 path = "./day-01/part-2/thomren.rs"
+
+[[bin]]
+name = "day-03-part-1-giltho"
+path = "./day-03/part-1/giltho.rs"
+
+[[bin]]
+name = "day-03-part-2-giltho"
+path = "./day-03/part-2/giltho.rs"
