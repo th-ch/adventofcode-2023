@@ -19,7 +19,7 @@ fn run(input: [:0]const u8) u64 {
         _ = elts.next(); // Skip game id
         //var game_id = std.fmt.parseInt(u32, (game_slice)[0 .. game_slice.len - 1], 10) catch unreachable; // skip `:` and parse game ID
         while (elts.next()) |count_raw| {
-            var count_parsed = std.fmt.parseInt(usize, count_raw, 10) catch unreachable;
+            const count_parsed = std.fmt.parseInt(usize, count_raw, 10) catch unreachable;
             if (count_parsed > switch (elts.next().?[0]) {
                 'g' => green_max,
                 'r' => red_max,
