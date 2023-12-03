@@ -12,6 +12,14 @@ name = "aoc"
 path = "./lib/rust/lib.rs"
 
 [[bin]]
+name = "day-01-part-1-paullgdc"
+path = "./day-01/part-1/paullgdc.rs"
+
+[[bin]]
+name = "day-01-part-2-paullgdc"
+path = "./day-01/part-2/paullgdc.rs"
+
+[[bin]]
 name = "day-01-part-1-giltho"
 path = "./day-01/part-1/giltho.rs"
 
