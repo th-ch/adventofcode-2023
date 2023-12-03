@@ -18,6 +18,7 @@ class SubmissionNim(SubmissionWrapper):
                 "--hints:off",  # no log during compilation
                 "-d:release",  # optimized build
                 "--opt:speed",  # optimized for speed
+                "--passC:\"-march=native\"",
                 "--checks:off",  # no runtime check
                 "-o:" + tmp.name,
                 file,
