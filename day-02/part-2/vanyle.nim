@@ -1,43 +1,24 @@
 from times import cpuTime
 from os import paramStr
 
-import tables, strutils
-
-proc parseInput(s: string): seq[seq[Table[string, int]]] = 
-    var l = s.strip().split("\n")
-
-    for line in l:
-        var game = line.split(":")[1]
-        var draws = game.strip.split(";")
-        var cgame: seq[Table[string,int]]
-        for d in draws:
-            var cc = d.strip.split(",")
-            var tt: Table[string, int]
-            for el in cc:
-                var pair = el.strip.split(" ",2)
-                tt[pair[1]] = parseInt(pair[0])
-            cgame.add(tt)
-        result.add cgame
+import strutils
 
 proc run(s: string): string =
-    var r = parseInput(s)
-    var s = 0
+    var r = 0
 
-    for i in 0..<r.len:
-        var game = r[i]
-        var minVals = {
-            "red": 0,
-            "green": 0,
-            "blue": 0
-        }.toTable
+    for line in s.split("\n"):
+        var game = line.split(": ")[1]
+        var minVals = [0,0,0]
+        for d in game.split("; "):
+            for el in d.split(", "):
+                var pair = el.split(" ",2)
+                if pair[1][0] == 'r': minVals[0] = max(minVals[0], parseInt(pair[0]))
+                if pair[1][0] == 'g': minVals[1] = max(minVals[1], parseInt(pair[0]))
+                if pair[1][0] == 'b': minVals[2] = max(minVals[2], parseInt(pair[0]))
+        let power = minVals[0] * minVals[1] *  minVals[2]
+        r += power
 
-        for draws in game:
-            for color, count in draws:
-                minVals[color] = max(minVals[color], count)
-
-        var power = minVals["red"] * minVals["green"] *  minVals["blue"]
-        s += power
-    return $s
+    return $r
 
 
 var input: string = paramStr(1)
