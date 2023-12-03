@@ -64,7 +64,9 @@ fn run(input: &str) -> u32 {
                 // store for next-line matching
                 numbers_current_line.push_back((number, number_start, number_start + number_size));
                 // try to match with a gear on the previous line
-                while let Some(gear) = gears_prev_line.front_mut() {
+                let mut cur_number = 0;
+                while cur_number < gears_prev_line.len() {
+                    let gear = &mut gears_prev_line[cur_number];
                     if gear.pos + 1 < number_start {
                         // the gear is too much to the left, it cannot match any number anymore
                         res += gear.ratio();
@@ -73,9 +75,11 @@ fn run(input: &str) -> u32 {
                     } else if gear.pos <= number_start + number_size {
                         // The gear is near the current number
                         gear.add_part(number);
+                        cur_number += 1;
+                    } else {
+                        // all remaining gears from the previous line are too much to the right, we'll have to match with a gear on the next line
+                        break;
                     }
-                    // all remaining gears from the previous line are too much to the right, we'll have to match with a gear on the next line
-                    break;
                 }
                 // try to match with a gear on the same line - it must be the last one parsed
                 if just_found_gear {
@@ -111,14 +115,16 @@ fn run(input: &str) -> u32 {
                 if just_found_number {
                     gear.add_part(numbers_current_line.back().unwrap().0)
                 }
-                while let Some(&(val, start, end)) = numbers_prev_line.front() {
-                    if line_cur + 1 >= start {
-                        // last possibility for the number to match
+                let mut cur_number = 0;
+                while cur_number < numbers_prev_line.len() {
+                    let (val, start, end) = numbers_prev_line[cur_number];
+                    if line_cur > end {
+                        // Number cannot match anymore
                         numbers_prev_line.pop_front();
-                        if line_cur <= end {
-                            // The number is near the current gear
-                            gear.add_part(val);
-                        }
+                    } else if line_cur + 1 >= start {
+                        // The number is near the current gear
+                        gear.add_part(val);
+                        cur_number += 1;
                     } else {
                         // all numbers are too much to the right
                         break;
@@ -164,9 +170,28 @@ mod tests {
     fn same_line() {
         assert_eq!(
             run("
-..2.3
-.*11*"),
+2.3
+*11*"),
             55
         )
+    }
+
+    #[test]
+    fn overlap() {
+        assert_eq!(
+            run("
+.002
+*.*.*
+.005"),
+            3 * 2 * 5
+        );
+        assert_eq!(
+            run("
+2.3
+.*.
+5.7
+.*"),
+            35
+        );
     }
 }

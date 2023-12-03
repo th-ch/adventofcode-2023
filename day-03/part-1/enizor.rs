@@ -123,4 +123,25 @@ mod tests {
             4361
         )
     }
+
+    #[test]
+    fn same_line() {
+        assert_eq!(
+            run("
+..2.3
+.*11*"),
+            16
+        )
+    }
+
+    #[test]
+    fn overlap() {
+        assert_eq!(
+            run("
+.200
+*.*.*
+.300"),
+            500
+        )
+    }
 }
