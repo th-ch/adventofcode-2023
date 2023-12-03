@@ -1,25 +1,27 @@
 from times import cpuTime
 from os import paramStr
 
-import strutils
-
-proc parseInput(s: string): seq[seq[int]] = 
-    var c = s.strip.split("\n")
-    var r: seq[seq[int]] = @[]
-    for i in 0..<c.len:
-        var t: seq[int] = @[]
-        for j in 0..<c[i].len:
-            if c[i][j].isDigit:
-                t.add parseInt($c[i][j])
-        r.add t
-    return r
+proc isdig(c: char): bool {.inline.} =
+    return c <= '9' and '0' <= c
 
 proc run(s: string): string =
-    var r = parseInput(s)
     var cv = 0
-    for l in r:
-        if l.len == 0: continue
-        cv += l[0]*10 + l[l.len - 1]
+    var isFirst = true
+    var lastVal = 0
+    for c in s:
+        if c == '\n':
+            cv += lastVal
+            isFirst = true
+            lastVal = 0
+            continue
+
+        let d = isdig(c)
+        var v = (cast[int](c) - cast[int]('0')) * cast[int](d)
+        cv += (v * 10) * cast[int](isFirst and d)
+        isFirst = isFirst and not d
+        lastVal = lastVal * cast[int](not d) + v * cast[int](d)
+
+    cv += lastVal
 
     return $cv
 
