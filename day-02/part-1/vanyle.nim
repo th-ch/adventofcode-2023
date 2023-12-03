@@ -1,27 +1,26 @@
 from times import cpuTime
 from os import paramStr
 
-import strutils, tables
+import strutils
 
-var maxCubes = {
-    "red": 12,
-    "green": 13,
-    "blue": 14
-}.toTable
+# red = 0, green = 1, blue = 2
+var maxCubes = [12,13,14]
 
-proc parseInput(s: string): seq[seq[Table[string, int]]] = 
-    var l = s.strip().split("\n")
+proc parseInput(s: string): seq[seq[array[3, int]]] = 
+    var l = s.split("\n")
 
     for line in l:
-        var game = line.split(":")[1]
-        var draws = game.strip.split(";")
-        var cgame: seq[Table[string,int]]
+        var game = line.split(": ")[1]
+        var draws = game.split("; ")
+        var cgame: seq[array[3,int]]
         for d in draws:
-            var cc = d.strip.split(",")
-            var tt: Table[string, int]
+            var cc = d.strip.split(", ")
+            var tt: array[3,int] = [0,0,0]
             for el in cc:
-                var pair = el.strip.split(" ",2)
-                tt[pair[1]] = parseInt(pair[0])
+                var pair = el.split(" ",2)
+                if pair[1][0] == 'r': tt[0] = parseInt(pair[0])
+                if pair[1][0] == 'g': tt[1] = parseInt(pair[0])
+                if pair[1][0] == 'b': tt[2] = parseInt(pair[0])
             cgame.add(tt)
         result.add cgame
 
