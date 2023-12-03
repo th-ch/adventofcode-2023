@@ -18,7 +18,7 @@ class Draw:
         self.green = max(self.green, other.green)
 
     @staticmethod
-    def from_str(raw_draws: list[str]) -> Self:
+    def from_str(raw_draws: list[str]):
         draw = Draw()
         for raw_draw in raw_draws:
             count, color = raw_draw.split(" ")
