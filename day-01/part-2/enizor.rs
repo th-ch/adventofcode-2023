@@ -23,7 +23,7 @@ const SPELLED: [&[u8]; 9] = [
 
 fn try_match(input: &[u8]) -> Option<isize> {
     let b = input[0];
-    if b >= b'1' && b <= b'9' {
+    if b.is_ascii_digit() {
         Some((b - b'0') as isize)
     } else {
         for (i, t) in SPELLED.iter().enumerate() {
