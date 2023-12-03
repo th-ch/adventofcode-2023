@@ -66,11 +66,8 @@ proc run(s: string): string =
     var i = 0
 
     var sptr = cast[int](s.cstring)
-
     const ldelim: uint16 = cast[uint16](cast[uint8]('\n') * 256.uint16 + cast[uint8]('\n'))
-    
     var mask = mm256_set_epi16(ldelim,ldelim,ldelim,ldelim,ldelim,ldelim,ldelim,ldelim,ldelim,ldelim,ldelim,ldelim,ldelim,ldelim,ldelim,ldelim)
-
 
     while i < s.len - 32:
         var stmp = mm256_loadu_si256(cast[ptr char](sptr + i))
