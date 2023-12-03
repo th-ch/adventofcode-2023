@@ -75,6 +75,12 @@ fn run(input: &str) -> u32 {
         }
         col += 1;
     }
+    if acc != 0 {
+        numbers.push_back(Number {
+            value: acc,
+            positions: (row, start_col - 1..=col),
+        });
+    }
     // ANALYSIS
     let mut res = 0;
     'outer: for symbol in &symbols {
