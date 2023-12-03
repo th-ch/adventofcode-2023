@@ -15,7 +15,7 @@ fn run(input: [:0]const u8) u64 {
         var min_g: usize = 0;
         var min_b: usize = 0;
         while (elts.next()) |count_raw| {
-            var count_parsed = std.fmt.parseInt(usize, count_raw, 10) catch unreachable;
+            const count_parsed = std.fmt.parseInt(usize, count_raw, 10) catch unreachable;
             switch (elts.next().?[0]) {
                 'g' => {
                     min_g = @max(min_g, count_parsed);
