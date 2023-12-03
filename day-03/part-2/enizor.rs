@@ -12,17 +12,17 @@ fn main() {
 
 #[derive(Debug, Default)]
 struct Gear {
-    pos: i16,
-    parts_count: u16,
-    value: u32,
+    pos: u64,
+    parts_count: u64,
+    value: u64,
 }
 
 impl Gear {
-    fn add_part(&mut self, part: u32) {
+    fn add_part(&mut self, part: u64) {
         self.parts_count += 1;
         self.value *= part;
     }
-    fn ratio(&self) -> u32 {
+    fn ratio(&self) -> u64 {
         if self.parts_count == 2 {
             self.value
         } else {
@@ -31,7 +31,7 @@ impl Gear {
     }
 }
 
-fn run(input: &str) -> u32 {
+fn run(input: &str) -> u64 {
     let bytes = input.as_bytes().iter();
     let mut res = 0;
     let mut line_cur = 0;
@@ -53,7 +53,7 @@ fn run(input: &str) -> u32 {
         // Parsing numbers takes priority
         if b.is_ascii_digit() {
             number *= 10;
-            number += (b - b'0') as u32;
+            number += (b - b'0') as u64;
             if number_size == 0 {
                 number_start = line_cur;
             }
