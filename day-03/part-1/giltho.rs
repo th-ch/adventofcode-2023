@@ -45,7 +45,7 @@ fn run(input: &str) -> u32 {
                 if acc != 0 {
                     numbers.push_back(Number {
                         value: acc,
-                        positions: (row - 1, start_col - 1..=col),
+                        positions: (row, start_col - 1..=col),
                     });
                     acc = 0;
                 }
