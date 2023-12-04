@@ -1,13 +1,16 @@
 from times import cpuTime
 from os import paramStr
 
-import sequtils, strutils
+import sequtils
+
+proc isdig(c: char): bool {.inline.} =
+    return c <= '9' and '0' <= c
 
 proc fparseInt(s: string, i: int): int =
     var j = i
-    while j < s.len and not s[j].isDigit:
+    while j < s.len and not s[j].isdig:
         inc j
-    while j < s.len and s[j].isDigit:
+    while j < s.len and s[j].isdig:
         result *= 10
         result += cast[int](s[j]) - cast[int]('0')
         inc j
