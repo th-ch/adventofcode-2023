@@ -14,11 +14,11 @@ proc fparseInt(s: string, i: int): int =
 
 proc run(s: string): string =
     var wTable: seq[int] = newSeq[int](s.len div 117 + 1)
+    var cardsOwned: seq[int] = newSeq[int](wTable.len)
+    
     var i = 0
     var idx = 0
     while i < s.len:
-        var l = s[i+9..i+115]
-
         var sh: set[uint8]
         for j in 0..<10:
             let idx = 10 + 3 * j + i
@@ -36,7 +36,6 @@ proc run(s: string): string =
         i += 117
         inc idx
 
-    var cardsOwned: seq[int] = newSeq[int](wTable.len)
     for i in 0..<cardsOwned.len:
         cardsOwned[i] = 1
 

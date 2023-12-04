@@ -17,8 +17,6 @@ proc run(s: string): string =
     var i = 0
 
     while i < s.len:
-        var l = s[i+9..i+115]
-
         var sh: set[uint8]
         for j in 0..<10:
             let idx = 10 + 3 * j + i
