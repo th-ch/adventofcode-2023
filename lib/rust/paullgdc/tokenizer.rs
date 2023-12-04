@@ -29,6 +29,12 @@ impl<'a> Tokenizer<'a> {
         }
     }
 
+    pub fn consume_whitespaces(&mut self) {
+        while self.curr_char() == Some(b' ') {
+            self.offset += 1;
+        }
+    }
+
     pub fn consume_name<'b>(&'b mut self) -> &'a str {
         let start = self.offset;
         while self
