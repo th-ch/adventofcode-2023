@@ -1,7 +1,6 @@
+use std::cmp::Ordering;
 use std::env::args;
 use std::time::Instant;
-use std::cmp::Ordering;
-
 
 use aoc::paullgdc::tokenizer::Tokenizer;
 
@@ -17,13 +16,12 @@ fn run(input: &str) -> isize {
     let mut t = Tokenizer::new(input);
     let mut total = 0;
     let mut winning_cards = Vec::new();
-    let mut available_cards = Vec::new();
     loop {
         if t.curr_char().is_none() {
             break;
         }
+        let mut card_won = 0;
         winning_cards.truncate(0);
-        available_cards.truncate(0);
 
         t.consume_until(b':');
         t.advance(1);
@@ -41,37 +39,14 @@ fn run(input: &str) -> isize {
                 t.advance(1);
                 break;
             }
-            available_cards.push(t.consume_u32().unwrap() as u8);
-        }
-
-        let mut card_won = 0;
-        // winning_cards.sort();
-        // available_cards.sort();
-        // let mut winning_idx = 0;
-        // let mut available_idx = 0;
-        // use Ordering::*;
-        // while winning_idx < winning_cards.len() && available_idx < available_cards.len() {
-        //     match winning_cards[winning_idx].cmp(&available_cards[available_idx]) {
-        //         Less => {
-        //             winning_idx += 1;
-        //         }
-        //         Greater => {
-        //             available_idx += 1;
-        //         }
-        //         Equal => {
-        //             card_won += 1;
-        //             winning_idx += 1;
-        //             available_idx += 1;
-        //         }
-        //     }
-        // }
-        for winning_card in &winning_cards {
-            for available_card in &available_cards {
-                if available_card == winning_card {
+            let available = t.consume_u32().unwrap() as u8;
+            for winning_card in &winning_cards {
+                if available == *winning_card {
                     card_won += 1;
                 }
             }
         }
+
         if card_won > 0 {
             total += 1 << (card_won - 1);
         }

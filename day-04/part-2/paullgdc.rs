@@ -18,14 +18,15 @@ fn run(input: &str) -> isize {
     let mut duplicates: Vec<isize> = Vec::new();
 
     let mut winning_cards = Vec::new();
-    let mut available_cards = Vec::new();
     let mut game_number = 0;
     loop {
         if t.curr_char().is_none() {
             break;
         }
+
+        let mut card_won = 0;
+
         winning_cards.truncate(0);
-        available_cards.truncate(0);
 
         t.consume_until(b':');
         t.advance(1);
@@ -43,7 +44,12 @@ fn run(input: &str) -> isize {
                 t.advance(1);
                 break;
             }
-            available_cards.push(t.consume_u32().unwrap() as u8);
+            let available = t.consume_u32().unwrap() as u8;
+            for winning_card in &winning_cards {
+                if available == *winning_card {
+                    card_won += 1;
+                }
+            }
         }
         if game_number == duplicates.len() {
             duplicates.push(0);
@@ -52,14 +58,6 @@ fn run(input: &str) -> isize {
 
         let multiplier = duplicates[game_number];
 
-        let mut card_won = 0;
-        for winning_card in &winning_cards {
-            for available_card in &available_cards {
-                if available_card == winning_card {
-                    card_won += 1;
-                }
-            }
-        }
         games += multiplier;
         if card_won > 0 {
             for i in 1..=card_won {
