@@ -13,12 +13,6 @@ const MAX_MATCHING_NUMBERS: usize = 5;
 #[cfg(not(test))]
 const MAX_MATCHING_NUMBERS: usize = 10;
 
-#[cfg(test)]
-const TOTAL_CARDS: usize = 6;
-
-#[cfg(not(test))]
-const TOTAL_CARDS: usize = 199;
-
 fn main() {
     let now = Instant::now();
     let output = run(&args().nth(1).expect("Please provide an input"));
@@ -29,7 +23,6 @@ fn main() {
 
 fn run(input: &str) -> isize {
     let input = input.as_bytes();
-    let mut card = 0;
     let mut idx: usize = CARD_ID_SIZE;
     let mut acc: u8 = 0;
     let mut winning_numbers: u128 = 0;
@@ -74,10 +67,6 @@ fn run(input: &str) -> isize {
                 winning_numbers = 0;
                 scratching_phase = false;
                 idx += CARD_ID_SIZE;
-                card += 1;
-                if card >= TOTAL_CARDS {
-                    break;
-                }
                 continue;
             }
             c => panic!("unreachable: {:?}", std::str::from_utf8(&[*c])),
