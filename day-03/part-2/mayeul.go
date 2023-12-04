@@ -5,7 +5,7 @@ import (
 	"io"
 	"os"
 	"regexp"
-	"slices"
+	"sort"
 	"strconv"
 	"strings"
 	"time"
@@ -104,7 +104,7 @@ func run(s string) interface{} {
 				}
 			}
 
-			slices.Sort(adjGears)
+			sort.Ints(adjGears)
 			if len(adjGears) == 2 {
 				res += adjGears[0] * adjGears[1]
 			}

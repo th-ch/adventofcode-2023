@@ -5,7 +5,7 @@ import (
 	"io"
 	"os"
 	"regexp"
-	"slices"
+	"sort"
 	"strings"
 	"time"
 )
@@ -19,8 +19,8 @@ func run(s string) interface{} {
 		card := strings.Split(matches[0][2], " ")
 		num := strings.Split(matches[0][3], " ")
 
-		slices.Sort(card)
-		slices.Sort(num)
+		sort.Strings(card)
+		sort.Strings(num)
 
 		i, j, score := 0, 0, 0
 		for i < len(card) && j < len(num) {
