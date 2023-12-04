@@ -1,7 +1,5 @@
 from tool.runners.python import SubmissionPy
 
-from collections import defaultdict, deque
-
 class ThChSubmission(SubmissionPy):
     def run(self, s):
         """
@@ -16,17 +14,12 @@ class ThChSubmission(SubmissionPy):
             winning = set(map(int, winning_numbers.split())) & set(map(int, numbers.split()))
             cards[card_id] = len(winning)
 
-        q = deque()
-        q.extend(cards.keys())
-        score_by_card_id = defaultdict(int)
-        while q:
-            card_id = q.popleft()
-            winning = cards[card_id]
-            score_by_card_id[card_id] += 1
-            if winning:
-                q.extend(range(card_id+1, card_id+1+winning))
+        scratchcards= {card_id: 1 for card_id in range(1, 1+len(cards))}
+        for card_id in range(1, 1+len(cards)):
+            for win in range(card_id+1, card_id+1+cards[card_id]):
+                scratchcards[win] += scratchcards[card_id]
 
-        return sum(score_by_card_id.values())
+        return sum(scratchcards.values())
 
 
 def test_th_ch():
