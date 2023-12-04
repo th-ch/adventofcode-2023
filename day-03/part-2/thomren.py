@@ -12,21 +12,22 @@ class ThomrenSubmission(SubmissionPy):
         n_cols = s.find("\n")
 
         part_numbers = {}
+        part_uid = 0
         for match in finditer(r"\d+", s):
+            part_uid += 1
             n = int(match.group())
             start, end = match.span()
             row = start // (n_cols + 1)
             col_start = start % (n_cols + 1)
             col_end = end % (n_cols + 1)
             for col in range(col_start, col_end):
-                part_numbers[(row, col)] = n
+                part_numbers[(row, col)] = (n, part_uid)
 
         res = 0
         for match in finditer(r"\*", s):
             start, end = match.span()
             row = start // (n_cols + 1)
             col = start % (n_cols + 1)
-            # let's suppose a gear is not adjacent to the same number twice
             adjacent_parts = {
                 part_numbers[(row, col)]
                 for row, col in product(
@@ -35,7 +36,7 @@ class ThomrenSubmission(SubmissionPy):
                 if (row, col) in part_numbers
             }
             if len(adjacent_parts) == 2:
-                res += list(adjacent_parts)[0] * list(adjacent_parts)[1]
+                res += list(adjacent_parts)[0][0] * list(adjacent_parts)[1][0]
 
         return res
 
