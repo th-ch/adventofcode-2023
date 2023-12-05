@@ -21,6 +21,7 @@ Pipfile
 Pipfile.lock
 
 zig-cache/
+leaderboard/*.html
 
 # Vim files
 *.swp
