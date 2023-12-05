@@ -31,11 +31,7 @@ proc run(s: string): string =
             if num in sh:
                 inc matches
 
-        if matches > 0:
-            var toAdd = 1
-            for i in 1..<matches:
-                toAdd *= 2
-            points += toAdd
+        points += (1 shl (matches-1)) * cast[int](matches > 0)
 
         i += 117
 
