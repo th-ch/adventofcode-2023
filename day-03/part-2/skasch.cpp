@@ -2,6 +2,7 @@
 #include <cstddef>
 #include <iostream>
 #include <optional>
+#include <span>
 #include <sstream>
 #include <string>
 
