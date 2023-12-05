@@ -6,6 +6,7 @@
 #include <span>
 #include <sstream>
 #include <string>
+#include <vector>
 
 class AggregatedCounts {
  public:
