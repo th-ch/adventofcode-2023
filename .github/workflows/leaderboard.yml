@@ -1,0 +1,66 @@
+name: CI
+
+on:  # yamllint disable-line rule:truthy
+  push:
+    branches:
+    - main
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 2
+
+    # Fetch origin/main ref so that we can run diffs from PR head
+    - name: Fix remote refs
+      run: git fetch --no-tags --depth=2 origin main
+
+    # Install missing language compilers and interpreters
+    # The default image natively supports bash, c/c++, dotnet, go, java, julia, python, ruby, rust
+    # For new languages, see https://github.com/actions/runner-images/blob/5dd62e7/images/linux first
+
+    - uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+        cache: pip
+    - name: deps-python
+      run: pip install --user -r requirements.txt
+
+    - uses: denoland/setup-deno@v1
+      with:
+        deno-version: v1.x
+
+    - uses: goto-bus-stop/setup-zig@v2
+      with:
+        version: 0.12.0-dev.1768+39a966b0a
+
+    - uses: jiro4989/setup-nim-action@v1
+      with:
+        nim-version: '2.0.0'
+
+    # TODO: switch back to vlang/setup-v@v1 when it supports not compiling everything from scratch every time
+    # - name: Install vlang
+    #   run: |
+    #     wget -P /tmp https://github.com/vlang/v/releases/latest/download/v_linux.zip
+    #     unzip -d /tmp /tmp/v_linux.zip
+    #     sudo /tmp/v/v symlink
+    #     # We can not remove /tmp/v/ as /usr/local/bin/v needs some files in there
+
+    # Install rust if not cached TODO
+    # - name: cache-cargo
+    #   uses: actions/cache@v3
+    #   id: cache-cargo
+    #   with:
+    #     path: ~/.cargo/.bin
+    #     key: ${{ runner.os }}-${{ hashFiles('Cargo.lock') }}
+    # - name: deps-cargo
+    #   if: steps.cache-cargo.outputs.cache-hit != 'true'
+    #   run: curl https://sh.rustup.rs -sSf -o rustup.sh && sh rustup.sh -y
+
+    # Build
+    - name: Build
+      run: ./leaderboard.sh
