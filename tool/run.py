@@ -83,6 +83,7 @@ def run(
             print_expanded_results(problem, results_by_input)
         else:
             results = get_aggregated_results(problem, results_by_author, print_time_dist)
+            print_aggregated_header()
             print_results(results, print_time_dist)
             all_results.append(results)
 
@@ -218,11 +219,12 @@ def print_restrict_results(problem, results_by_author):
             results.append(result)
     print_results(results)
 
-
-def get_aggregated_results(problem, results_by_author, print_time_dist=False):
+def print_aggregated_header():
     print("---------------------------------------------------")
     print("Avg over all inputs")
     print("---------------------------------------------------")
+
+def get_aggregated_results(problem, results_by_author, print_time_dist=False):
     results = []
     # Loop for all authors, get all the results they produced
     for author, results_by_input in results_by_author.items():
