@@ -27,3 +27,6 @@ leaderboard/*.html
 *.swp
 
 stable
+
+# Local Netlify folder
+.netlify

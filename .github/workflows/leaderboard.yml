@@ -19,6 +19,9 @@ jobs:
     - name: Fix remote refs
       run: git fetch --no-tags --depth=2 origin main
 
+    - name: Setup netlify
+      run: npm install -g netlify-cli
+
     # Install missing language compilers and interpreters
     # The default image natively supports bash, c/c++, dotnet, go, java, julia, python, ruby, rust
     # For new languages, see https://github.com/actions/runner-images/blob/5dd62e7/images/linux first
