@@ -17,11 +17,8 @@ fn run(input: &str) -> usize {
         .collect::<Vec<_>>();
     let grid_length: usize = grid.len();
     let grid_width: usize = grid[0].len();
-    for row in grid.iter() {
-        println!("{:?}", row);
-    }
 
-    let mut gear_map: HashMap<usize, Vec<[usize; 2]>> = HashMap::new();
+    let mut gear_map: HashMap<[usize; 2], Vec<usize>> = HashMap::new();
 
     for i in 0..grid_length {
         let mut n_cursor: usize = 0;
@@ -51,11 +48,6 @@ fn run(input: &str) -> usize {
                     .map(|row| row[j.saturating_sub(n_cursor + 1)..=j].to_vec())
                     .collect();
 
-                println!("{}", part_num);
-                for row in adjacent.iter() {
-                    println!("{:?}", row);
-                }
-
                 let mut gear_pos: [usize; 2] = [0, 0];
                 for (k, row) in adjacent.iter().enumerate() {
                     for (l, c) in row.iter().enumerate() {
@@ -70,13 +62,10 @@ fn run(input: &str) -> usize {
                             } else {
                                 gear_pos[1] = l + j - n_cursor - 1;
                             }
-                            if gear_map.contains_key(&(part_num as usize)) {
-                                gear_map
-                                    .get_mut(&(part_num as usize))
-                                    .unwrap()
-                                    .push(gear_pos);
+                            if gear_map.contains_key(&gear_pos) {
+                                gear_map.get_mut(&gear_pos).unwrap().push(part_num as usize);
                             } else {
-                                gear_map.insert(part_num as usize, vec![gear_pos]);
+                                gear_map.insert(gear_pos, vec![part_num as usize]);
                             }
                         }
                     }
@@ -85,29 +74,13 @@ fn run(input: &str) -> usize {
             }
         }
     }
-    println!("{:?}", gear_map);
-
     let mut gear_ratio: usize = 0;
-    for (k, v) in gear_map.iter() {
-        for (k2, v2) in gear_map.iter() {
-            if k != k2 {
-                for i in v.iter() {
-                    let mut gear_adj_count = 0;
-                    for j in v2.iter() {
-                        if i == j {
-                            if gear_adj_count == 0 {
-                                gear_ratio += k * k2;
-                            } else {
-                                gear_ratio -= k * k2;
-                                break;
-                            }
-                        }
-                    }
-                }
-            }
+    for (_, v) in gear_map.iter() {
+        if v.len() == 2 {
+            gear_ratio += v.iter().product::<usize>();
         }
     }
-    gear_ratio / 2
+    gear_ratio
 }
 
 #[cfg(test)]
