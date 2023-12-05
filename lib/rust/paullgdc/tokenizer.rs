@@ -58,16 +58,24 @@ impl<'a> Tokenizer<'a> {
     }
 
     pub fn consume_u32(&mut self) -> Option<u32> {
-        let start = self.offset;
-        while self
-            .data
-            .as_bytes()
-            .get(self.offset)
-            .map(|c| c.is_ascii_digit())
-            .unwrap_or(false)
-        {
-            self.offset += 1;
+        let mut res = 0;
+        let mut c = *self.data.as_bytes().get(self.offset)?;
+        if !c.is_ascii_digit() {
+            return None;
         }
-        self.data[start..self.offset].parse().ok()
+        loop {
+            if !c.is_ascii_digit() {
+                break;
+            }
+            self.offset += 1;
+            res *= 10;
+            res += (c - b'0') as u32;
+            c = if let Some(&c) = self.data.as_bytes().get(self.offset) {
+                c
+            } else {
+                break;
+            }
+        }
+        Some(res)
     }
 }
