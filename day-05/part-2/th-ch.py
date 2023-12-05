@@ -28,7 +28,7 @@ class ThChSubmission(SubmissionPy):
                     try:
                         value = next(segments[(a, b)] + new_beg - a for a,b in segments if a<=new_beg and new_end<=b)
                     except StopIteration:
-                        value = beg
+                        value = new_beg
                     updated_ranges[(new_beg, new_end)] = value
 
             ranges = [(v, v+end-beg) for (beg, end), v in updated_ranges.items()]
