@@ -3,10 +3,10 @@ from os import paramStr
 
 from math import sqrt, floor, ceil
 
-proc isDigi(c: char): bool = c >= '0' and c <= '9'
+proc isDigi(c: char): bool {.inline.} = c >= '0' and c <= '9'
 
 proc parseInput(s: string): array[8, int] = 
-    var i = 9
+    var i = 12
     var r: array[8, int]
     var j = 0
     var n = 0
@@ -17,7 +17,7 @@ proc parseInput(s: string): array[8, int] =
                 inc j
                 n = 0
             if s[i] == '\n':
-                i += 9
+                i += 12
         elif isDigi(s[i]):
             n *= 10
             n += cast[int](s[i]) - cast[int]('0')

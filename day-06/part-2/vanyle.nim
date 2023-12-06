@@ -6,7 +6,7 @@ from math import sqrt, floor, ceil
 proc isDigi(c: char): bool = c >= '0' and c <= '9'
 
 proc parseInput2(s: string): (int, int) = 
-    var i = 9
+    var i = 12
     var n1 = 0
     var n2 = 0
     while s[i] != '\n':
@@ -14,7 +14,7 @@ proc parseInput2(s: string): (int, int) =
             n1 *= 10
             n1 += cast[int](s[i]) - cast[int]('0')
         inc i
-    i += 9
+    i += 12
     while i < s.len:
         if isDigi(s[i]):
             n2 *= 10
