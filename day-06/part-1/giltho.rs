@@ -18,7 +18,7 @@ fn main() {
 #[allow(non_snake_case)]
 #[inline(always)]
 fn calc(tm: f64, b: f64) -> isize {
-    let sqΔ = (tm.powi(2) - 4. * (b + 1.)).sqrt();
+    let sqΔ = (tm * tm - 4. * (b + 1.)).sqrt();
     let t0 = (tm + sqΔ) / 2.;
     let t1 = (tm - sqΔ) / 2.;
     (t0.floor() - t1.ceil()) as isize + 1
