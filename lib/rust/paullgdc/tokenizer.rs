@@ -47,6 +47,18 @@ impl<'a> Tokenizer<'a> {
         &self.data[start..self.offset]
     }
 
+    pub fn consume_numeric<'b>(&'b mut self) -> &'a str {
+        let start = self.offset;
+        while self
+            .curr_char()
+            .map(|c| c.is_ascii_digit())
+            .unwrap_or(false)
+        {
+            self.offset += 1;
+        }
+        &self.data[start..self.offset]
+    }
+
     pub fn consume_until(&mut self, until_c: u8) {
         while self.curr_char().map(|c| c != until_c).unwrap_or(false) {
             self.offset += 1;
