@@ -1,14 +1,11 @@
 const std = @import("std");
+const builtin = @import("builtin");
 
 var a: std.mem.Allocator = undefined;
 const stdout = std.io.getStdOut().writer(); //prepare stdout to write in
 
-const MATRIX_W: usize = 141; // 140 chars + \n
-const MATRIX_H: usize = 140;
-
-//Enable during tests
-//const MATRIX_W: usize = 11; // 10 chars + \n
-//const MATRIX_H: usize = 10;
+const MATRIX_W: usize = if (builtin.is_test) 11 else 141;
+const MATRIX_H: usize = if (builtin.is_test) 10 else 140;
 
 inline fn is_number(c: u8) bool {
     return c >= '0' and c <= '9';
@@ -71,10 +68,11 @@ fn run(input: [:0]const u8) u64 {
                 if (col_idx < MATRIX_W - 1 and !is_number(input[idx - MATRIX_W]) and is_number(input[idx - MATRIX_W + 1])) {
                     if (num1 == 0) {
                         num1 = scan_number(input, idx - MATRIX_W + 1);
+                    } else if (num2 != 0) {
+                        // Triple-gear - skip
+                        continue;
                     } else {
                         num2 = scan_number(input, idx - MATRIX_W + 1);
-                        gear_sum += num1 * num2;
-                        continue;
                     }
                 }
             }
@@ -84,10 +82,11 @@ fn run(input: [:0]const u8) u64 {
                 if (is_number(input[idx - 1])) {
                     if (num1 == 0) {
                         num1 = scan_number(input, idx - 1);
+                    } else if (num2 != 0) {
+                        // Triple-gear - skip
+                        continue;
                     } else {
                         num2 = scan_number(input, idx - 1);
-                        gear_sum += num1 * num2;
-                        continue;
                     }
                 }
             }
@@ -97,10 +96,11 @@ fn run(input: [:0]const u8) u64 {
                 if (is_number(input[idx + 1])) {
                     if (num1 == 0) {
                         num1 = scan_number(input, idx + 1);
+                    } else if (num2 != 0) {
+                        // Triple-gear - skip
+                        continue;
                     } else {
                         num2 = scan_number(input, idx + 1);
-                        gear_sum += num1 * num2;
-                        continue;
                     }
                 }
             }
@@ -112,20 +112,22 @@ fn run(input: [:0]const u8) u64 {
                     if (is_number(input[idx + MATRIX_W - 1])) {
                         if (num1 == 0) {
                             num1 = scan_number(input, idx + MATRIX_W - 1);
+                        } else if (num2 != 0) {
+                            // Triple-gear - skip
+                            continue;
                         } else {
                             num2 = scan_number(input, idx + MATRIX_W - 1);
-                            gear_sum += num1 * num2;
-                            continue;
                         }
                     } else {
                         // Edge-case: check down
                         if (is_number(input[idx + MATRIX_W])) {
                             if (num1 == 0) {
                                 num1 = scan_number(input, idx + MATRIX_W);
+                            } else if (num2 != 0) {
+                                // Triple-gear - skip
+                                continue;
                             } else {
                                 num2 = scan_number(input, idx + MATRIX_W);
-                                gear_sum += num1 * num2;
-                                continue;
                             }
                         }
                     }
@@ -133,10 +135,11 @@ fn run(input: [:0]const u8) u64 {
                     // Check down
                     if (num1 == 0) {
                         num1 = scan_number(input, idx + MATRIX_W);
+                    } else if (num2 != 0) {
+                        // Triple-gear - skip
+                        continue;
                     } else {
                         num2 = scan_number(input, idx + MATRIX_W);
-                        gear_sum += num1 * num2;
-                        continue;
                     }
                 }
                 // Check up-right only if there's no digit up
@@ -145,13 +148,18 @@ fn run(input: [:0]const u8) u64 {
                     if (!is_number(input[idx + MATRIX_W]) and is_number(input[idx + MATRIX_W + 1])) {
                         if (num1 == 0) {
                             num1 = scan_number(input, idx + MATRIX_W + 1);
+                        } else if (num2 != 0) {
+                            // Triple-gear - skip
+                            continue;
                         } else {
                             num2 = scan_number(input, idx + MATRIX_W + 1);
-                            gear_sum += num1 * num2;
-                            continue;
                         }
                     }
                 }
+            }
+            if (num2 != 0) {
+                gear_sum += num1 * num2;
+                continue;
             }
             // Cog with a single number. Do nothing.
         }
@@ -275,11 +283,19 @@ test "synthetic_single" {
 
 test "synthetic_many" {
     stdout.print("\n", .{}) catch unreachable;
-    const input_1 =
+    const input =
         \\100.100...
         \\...*..*100
     ;
-    try std.testing.expect(run(input_1) == 100 * 100 + 100 * 100);
+    try std.testing.expect(run(input) == 100 * 100 + 100 * 100);
+}
+test "synthetic_toomuch" {
+    stdout.print("\n", .{}) catch unreachable;
+    const input =
+        \\100.100...
+        \\...*100...
+    ;
+    try std.testing.expect(run(input) == 0);
 }
 
 test "ez" {
