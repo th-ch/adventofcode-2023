@@ -12,7 +12,6 @@ fn main() {
 
 fn run(input: &str) -> usize {
     let mut card_count: HashMap<usize, usize> = HashMap::new();
-    let mut n_copies: usize = 0;
     for (i, line) in input
         .lines()
         .map(|line: &str| line.split(":").nth(1).unwrap().trim())
@@ -34,32 +33,23 @@ fn run(input: &str) -> usize {
             .split_whitespace()
             .map(|x| x.parse::<u32>().unwrap())
             .collect::<HashSet<u32>>();
-        let n_winning_numbers: usize =
-            winning_numbers.intersection(&scratched_numbers).count();
-        
-        if card_count.contains_key(&(i+1)) {
-            card_count.insert(i+1, card_count[&(i+1)] + 1);
+        let n_winning_numbers: usize = winning_numbers.intersection(&scratched_numbers).count();
+
+        if card_count.contains_key(&(i + 1)) {
+            card_count.insert(i + 1, card_count[&(i + 1)] + 1);
         } else {
-            card_count.insert(i+1, 1);
+            card_count.insert(i + 1, 1);
         }
+
         if n_winning_numbers > 0 {
-            if n_copies == 0 {
-                n_copies = n_winning_numbers;
-                for j in i+2..n_winning_numbers+i+2 {
-                    card_count.insert(j, 1);
-                }
-            } else {
-                for j in i+2..n_winning_numbers+i+2 {
-                    card_count.insert(j, card_count[&j] + 1*card_count[&(i+1)]);
+            for j in i + 2..n_winning_numbers + i + 2 {
+                if card_count.contains_key(&j) {
+                    card_count.insert(j, card_count[&(i + 1)] + card_count[&j]);
+                } else {
+                    card_count.insert(j, card_count[&(i + 1)]);
                 }
             }
         }
-        if n_copies > 0 {
-            n_copies -= 1;
-        }
-        // println!("{}", i+1);
-        // println!("{:?}", n_winning_numbers);
-        // println!("{:?}", card_count);
     }
     card_count.values().sum()
 }
