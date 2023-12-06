@@ -12,12 +12,13 @@ class DavidSubmission(SubmissionPy):
         INDEX_START = lines[0].index(":")
         INDEX_SEPERATOR = lines[0].index("|")
         for line in lines:
-            winning_part = line[INDEX_START+1:INDEX_SEPERATOR]
-            winning_numbers = set(int(x) for x in winning_part.strip().split())
-            candidate_part = line[INDEX_SEPERATOR+1:]
-            candidate_numbers = set(int(x) for x in candidate_part.strip().split())
-            count_winning = len(winning_numbers & candidate_numbers)
+            left_part = line[INDEX_START+1:INDEX_SEPERATOR]
+            left_numbers = set(int(x) for x in left_part.split())
+            right_part = line[INDEX_SEPERATOR+1:]
+            right_numbers = set(int(x) for x in right_part.split())
+            
+            count_winners = len(left_numbers & right_numbers)
 
-            if count_winning > 0:
-                result += (1<<(count_winning-1))
+            if count_winners > 0:
+                result += (1<<(count_winners-1))
         return result
