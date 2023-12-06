@@ -11,11 +11,6 @@ fn main() {
     println!("{}", output);
 }
 
-struct Race {
-    time: u32,
-    record: u32,
-}
-
 fn run(input: &str) -> isize {
     let mut t = Tokenizer::new(input);
 
