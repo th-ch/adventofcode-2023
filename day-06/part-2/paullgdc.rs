@@ -41,7 +41,7 @@ fn run(input: &str) -> isize {
         }
     }
 
-    match resolve_poly([-(distance as f64), time as f64, -1.0]) {
+    match resolve_poly(&[-(distance as f64), time as f64, -1.0]) {
         Poly2Roots::NoRoots => 0,
         Poly2Roots::OneRoot(_) => 0,
         Poly2Roots::TwoRoots(lower, higer) => {
@@ -56,7 +56,7 @@ enum Poly2Roots {
     TwoRoots(f64, f64),
 }
 
-fn resolve_poly(poly: [f64; 3]) -> Poly2Roots {
+fn resolve_poly(poly: &[f64; 3]) -> Poly2Roots {
     let det = poly[1] * poly[1] - 4.0 * poly[0] * poly[2];
     match det.total_cmp(&0.0) {
         std::cmp::Ordering::Greater => {
