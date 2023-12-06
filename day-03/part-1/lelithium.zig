@@ -1,14 +1,11 @@
 const std = @import("std");
+const builtin = @import("builtin");
 
 var a: std.mem.Allocator = undefined;
 const stdout = std.io.getStdOut().writer(); //prepare stdout to write in
 
-const MATRIX_W: usize = 141; // 140 chars + \n
-const MATRIX_H: usize = 140;
-
-// Enable during tests
-//const MATRIX_W: usize = 11; // 10 chars + \n
-//const MATRIX_H: usize = 10;
+const MATRIX_W: usize = if (builtin.is_test) 11 else 141;
+const MATRIX_H: usize = if (builtin.is_test) 10 else 140;
 
 fn is_symbol(c: u8) bool {
     return switch (c) {
