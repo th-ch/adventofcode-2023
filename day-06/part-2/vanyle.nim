@@ -19,7 +19,7 @@ proc run(s: string): string =
     let (time, idx) = parseInput2(s, 0)
     let (distance, _) = parseInput2(s, idx+1)
 
-    var delta = sqrt((time*time - 4 * distance).float)
+    var delta = sqrt((time*time - 4 * (distance+1)).float)
     var x1 = ((time.float + delta) / 2).floor
     var x2 = ((time.float - delta) / 2).ceil
     var ways = (x1 - x2 + 1).int

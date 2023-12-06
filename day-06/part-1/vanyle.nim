@@ -28,7 +28,7 @@ proc run(s: string): string =
     var res = 1
 
     for i in 0..<times.len:
-        var delta = sqrt((times[i]*times[i] - 4 * distances[i]).float)
+        var delta = sqrt((times[i]*times[i] - 4 * (distances[i]+1)).float)
         var x1 = ((times[i].float + delta) / 2).floor
         var x2 = ((times[i].float - delta) / 2).ceil
         res *= (x1 - x2 + 1).int
