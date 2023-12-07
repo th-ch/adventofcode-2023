@@ -42,54 +42,37 @@ fn card_counts_to_hand(hand: &[u8; 5]) -> Hand {
     for &card in hand {
         card_counts[card as usize] += 1 as u8;
     }
-    let j_count = card_counts[1];
+    let max_idx = card_counts[2..]
+        .iter()
+        .enumerate()
+        .map(|(i, &c)| (c, i + 2))
+        .max()
+        .unwrap()
+        .1;
+    card_counts[max_idx] += card_counts[1];
+
     let mut pairs = 0;
     let mut three = false;
-    let mut four = false;
-    let mut five = false;
     for i in 2..card_counts.len() {
-        match card_counts[i] + j_count {
-            5 => five = true,
-            4 => four = true,
-            _ => {}
-        }
         match card_counts[i] {
+            5 => return Five,
+            4 => return Four,
             3 => three = true,
             2 => pairs += 1,
             _ => {}
         }
     }
-
-    let hand_type = if five {
-        Five
-    } else if four {
-        Four
-    } else if three && pairs == 1 {
+    if three && pairs == 1 {
         Full
     } else if three {
         Three
     } else if pairs == 2 {
-        match j_count {
-            0 => TwoPairs,
-            1 => Full,
-            _ => panic!(),
-        }
+        TwoPairs
     } else if pairs == 1 {
-        match j_count {
-            0 => Pair,
-            1 => Three,
-            _ => panic!(),
-        }
+        Pair
     } else {
-        match j_count {
-            0 => HighCard,
-            1 => Pair,
-            2 => Three,
-            _ => panic!(),
-        }
-    };
-
-    hand_type
+        HighCard
+    }
 }
 
 fn run(input: &str) -> isize {
