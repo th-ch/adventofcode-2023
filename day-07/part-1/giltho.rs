@@ -16,15 +16,6 @@ fn main() {
 }
 
 #[inline(always)]
-fn count_1_bits(x: u16) -> u16 {
-    let mut x = (x & 0x5555) + ((x >> 1) & 0x5555);
-    x = (x & 0x3333) + ((x >> 2) & 0x3333);
-    x = (x & 0x0F0F) + ((x >> 4) & 0x0F0F);
-    x = x + (x >> 8);
-    x & 31
-}
-
-#[inline(always)]
 fn value(c: u8) -> u32 {
     match c {
         b'2'..=b'9' => (c - b'2') as u32,
@@ -53,27 +44,27 @@ fn score(hand: &[u8]) -> u32 {
         + (values[2] << (4 * 2))
         + (values[3] << 4)
         + values[4];
-    let mut acc = 0u16;
-    let mut cur = 0u16;
+    let mut acc = 0u32;
+    let mut cur = 0u32;
     let mut prev = 100;
-    let mut set = 0;
+    let mut set: u16 = 0;
     values.sort_unstable();
     for v in values {
         set |= 1 << v;
         if v == prev {
             cur += 1;
         } else {
-            acc = acc * 10 + cur;
+            acc = (acc << 4) + cur;
             cur = 1;
             prev = v;
         }
     }
-    acc = acc * 10 + cur;
-    let hand_val = match (count_1_bits(set), acc) {
+    acc = (acc << 4) + cur;
+    let hand_val = match (set.count_ones(), acc) {
         (1, _) => 6 << (4 * 5),
-        (2, 41 | 14) => 5 << (4 * 5),
-        (2, 32 | 23) => 4 << (4 * 5),
-        (3, 311 | 131 | 113) => 3 << (4 * 5),
+        (2, 0x41 | 0x14) => 5 << (4 * 5),
+        (2, 0x32 | 0x23) => 4 << (4 * 5),
+        (3, 0x311 | 0x131 | 0x113) => 3 << (4 * 5),
         (3, _) => 2 << (4 * 5),
         (4, _) => 1 << (4 * 5),
         _ => 0,

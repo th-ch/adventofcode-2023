@@ -16,15 +16,6 @@ fn main() {
 }
 
 #[inline(always)]
-fn count_1_bits(x: u16) -> u16 {
-    let mut x = (x & 0x5555) + ((x >> 1) & 0x5555);
-    x = (x & 0x3333) + ((x >> 2) & 0x3333);
-    x = (x & 0x0F0F) + ((x >> 4) & 0x0F0F);
-    x = x + (x >> 8);
-    x & 31
-}
-
-#[inline(always)]
 fn value(c: u8) -> u32 {
     match c {
         b'2'..=b'9' => (c - b'1') as u32,
@@ -54,10 +45,10 @@ fn score(hand: &[u8]) -> u32 {
         + (values[3] << 4)
         + values[4];
     values.sort_unstable();
-    let mut acc = 0u16;
-    let mut cur = 0u16;
+    let mut acc = 0u32;
+    let mut cur = 0u32;
     let mut prev = 100;
-    let mut set = 0;
+    let mut set: u32 = 0;
     let mut jokers = 0;
     for v in values {
         if v == 0 {
@@ -68,21 +59,23 @@ fn score(hand: &[u8]) -> u32 {
         if v == prev {
             cur += 1;
         } else {
-            acc = acc * 10 + cur;
+            acc = (acc << 4) + cur;
             cur = 1;
             prev = v;
         }
     }
-    acc = acc * 10 + cur;
-    let hand_val = match (jokers, count_1_bits(set), acc) {
+    acc = (acc << 4) + cur;
+    let hand_val = match (jokers, set.count_ones(), acc) {
         // Five of a kind
         (5, _, _) | (_, 1, _) => 6 << (4 * 5),
         // Four of a kind
-        (0, 2, 41 | 14) | (1, 2, 31 | 13) | (2, 2, 21 | 12) | (3, 2, 11) => 5 << (4 * 5),
+        (0, 2, 0x41 | 0x14) | (1, 2, 0x31 | 0x13) | (2, 2, 0x21 | 0x12) | (3, 2, 0x11) => {
+            5 << (4 * 5)
+        }
         // Full house
         (_, 2, _) => 4 << (4 * 5),
         // Three of a kind
-        (0, 3, 311 | 131 | 113) | (1, 3, 211 | 121 | 112) | (2, 3, _) => 3 << (4 * 5),
+        (0, 3, 0x311 | 0x131 | 0x113) | (1, 3, 0x211 | 0x121 | 0x112) | (2, 3, _) => 3 << (4 * 5),
         // Two pairs
         (_, 3, _) => 2 << (4 * 5),
         // One pair
