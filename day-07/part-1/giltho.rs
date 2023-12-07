@@ -53,11 +53,11 @@ fn score(hand: &[u8]) -> u32 {
         + (values[2] << (4 * 2))
         + (values[3] << 4)
         + values[4];
-    values.sort_unstable();
     let mut acc = 0u16;
     let mut cur = 0u16;
     let mut prev = 100;
     let mut set = 0;
+    values.sort_unstable();
     for v in values {
         set |= 1 << v;
         if v == prev {
@@ -101,7 +101,7 @@ fn run(input: &str) -> usize {
         let bid = parse_int(&line[6..]);
         *p = (score, bid)
     }
-    hands.sort_by_key(|k| k.0);
+    hands.sort_unstable();
     hands
         .into_iter()
         .enumerate()

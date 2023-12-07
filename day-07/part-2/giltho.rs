@@ -112,7 +112,7 @@ fn run(input: &str) -> usize {
         let bid = parse_int(&line[6..]);
         *p = (score, bid)
     }
-    hands.sort_by_key(|k| k.0);
+    hands.sort_unstable();
     hands
         .into_iter()
         .enumerate()
