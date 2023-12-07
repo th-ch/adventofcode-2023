@@ -35,6 +35,14 @@ impl<'a> Tokenizer<'a> {
         }
     }
 
+    pub fn consume_while<'b, F: FnMut(u8) -> bool>(&'b mut self, mut f: F) -> &'a str {
+        let start = self.offset;
+        while self.curr_char().map(&mut f).unwrap_or(false) {
+            self.offset += 1;
+        }
+        &self.data[start..self.offset]
+    }
+
     pub fn consume_name<'b>(&'b mut self) -> &'a str {
         let start = self.offset;
         while self
