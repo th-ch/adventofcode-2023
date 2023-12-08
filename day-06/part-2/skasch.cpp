@@ -6,7 +6,7 @@
 #include <sstream>
 #include <string>
 
-static constexpr double kEpsilon = 0.0001;
+static constexpr double kEpsilon = 0.00001;
 
 bool IsDigit(char c) { return '0' <= c && c <= '9'; }
 

@@ -6,7 +6,7 @@
 #include <string>
 #include <vector>
 
-static constexpr double kEpsilon = 0.0001;
+static constexpr double kEpsilon = 0.00001;
 
 std::vector<int> ParseValues(const std::string& line) {
   std::vector<int> values;
