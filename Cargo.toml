@@ -6,6 +6,7 @@ rust-version = "1.74"
 edition = "2021"
 
 [dependencies]
+num = "0.4.1"
 
 [lib]
 name = "aoc"
@@ -241,3 +242,11 @@ path = "./day-08/part-1/enizor.rs"
 [[bin]]
 name = "day-08-part-2-enizor"
 path = "./day-08/part-2/enizor.rs"
+
+[[bin]]
+name = "day-08-part-1-giltho"
+path = "./day-08/part-1/giltho.rs"
+
+[[bin]]
+name = "day-08-part-2-giltho"
+path = "./day-08/part-2/giltho.rs"
