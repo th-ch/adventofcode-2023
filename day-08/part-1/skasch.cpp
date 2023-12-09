@@ -10,8 +10,8 @@ constexpr int GetValue(const std::string& node) {
   return (node[0] - 'A') + 26 * (node[1] - 'A') + 26 * 26 * (node[2] - 'A');
 }
 
-static constexpr int kStartNode = GetValue("AAA");
-static constexpr int kEndNode = GetValue("ZZZ");
+static constexpr int kStartNode = 0;
+static constexpr int kEndNode = 26 * 26 * 26 - 1;
 
 void UpdateGraph(const std::string& line) {
   kGraph[GetValue(line.substr(0, 3))] = {GetValue(line.substr(7, 3)),
