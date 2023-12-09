@@ -33,9 +33,11 @@ int FindNext(const std::deque<int>& numbers) {
       diffs.pop_back();
       break;
     }
-    if (diffs.size() >= 2 && diffs.at(diffs.size() - 2).front() == 0 &&
-        diffs.at(diffs.size() - 2).at(1) == 0 &&
-        diffs.at(diffs.size() - 2).back() == 0) {
+    if (diffs.size() >= 3 && diffs.at(diffs.size() - 3).front() == 0 &&
+        diffs.at(diffs.size() - 3).at(1) == 0 &&
+        diffs.at(diffs.size() - 3).at(2) == 0 &&
+        diffs.at(diffs.size() - 3).back() == 0) {
+      diffs.pop_back();
       diffs.pop_back();
       diffs.pop_back();
       break;
