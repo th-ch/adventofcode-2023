@@ -6,7 +6,7 @@
 
 static std::array<std::pair<int, int>, 26 * 26 * 26> kGraph;
 
-constexpr int GetValue(const std::string& node) {
+int GetValue(const std::string& node) {
   return (node[0] - 'A') + 26 * (node[1] - 'A') + 26 * 26 * (node[2] - 'A');
 }
 
