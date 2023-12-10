@@ -2,7 +2,7 @@ from tool.runners.python import SubmissionPy
 
 
 class {class_name}(SubmissionPy):
-    def run(self, s):
+    def run(self, s: str):
         """
         :param s: input in string format
         :return: solution flag
