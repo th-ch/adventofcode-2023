@@ -1,4 +1,5 @@
 Cython>=0.29.32
+matplotlib==3.8.2
 networkx>=2.8.8
 numpy>=1.23.5,<2
 regex==2023.10.3
