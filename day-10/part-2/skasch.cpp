@@ -256,7 +256,6 @@ std::string Run(const std::string& input) {
   kInputSize = input.size();
   int start_pos = FindStart(input);
   const auto& [start_shape, loop] = TraverseAll(input, start_pos);
-  std::cerr << "Start shape: " << start_shape << '\n';
   int count_inside = CountInside(input, loop, start_shape);
   return std::to_string(count_inside);
 }
