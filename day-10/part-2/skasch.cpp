@@ -55,7 +55,6 @@ std::optional<int> Move(int pos, const Direction& direction) {
       return MoveDown(pos);
       break;
     default:
-      std::cerr << "Invalid direction \n";
       throw std::invalid_argument("Invalid direction");
   }
 }
