@@ -3,6 +3,7 @@
 #include <span>
 #include <sstream>
 #include <string>
+#include <vector>
 
 static constexpr int kMaxRowSize = 255;
 static int kRowSize = kMaxRowSize;
