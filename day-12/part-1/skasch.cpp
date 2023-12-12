@@ -9,8 +9,8 @@
 #include <vector>
 
 static constexpr int kNRrows = 1000;
-static constexpr int kMaxLineSize = 25;
-static constexpr int kMaxSizes = 10;
+static constexpr int kMaxLineSize = 21;
+static constexpr int kMaxSizes = 7;
 static std::array<std::int64_t,
                   kNRrows * kMaxLineSize * kMaxLineSize * kMaxSizes * 2>
     kDp;
