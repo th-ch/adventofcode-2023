@@ -6,6 +6,7 @@
 #include <sstream>
 #include <stdexcept>
 #include <string>
+#include <vector>
 
 static constexpr int kRepetitions = 5;
 static constexpr int kNRrows = 1000;
