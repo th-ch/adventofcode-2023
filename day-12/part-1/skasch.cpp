@@ -11,18 +11,15 @@
 static constexpr int kNRrows = 1000;
 static constexpr int kMaxLineSize = 21;
 static constexpr int kMaxSizes = 7;
-static std::array<std::int64_t,
-                  kNRrows * kMaxLineSize * kMaxLineSize * kMaxSizes>
-    kDp;
+static std::array<std::int64_t, kNRrows * kMaxLineSize * kMaxSizes> kDp;
 
-int ToIndex(int line_index, int left, int right, int index) {
-  return line_index * kMaxLineSize * kMaxLineSize * kMaxSizes +
-         left * kMaxLineSize * kMaxSizes + right * kMaxSizes + index;
+int ToIndex(int line_index, int left, int index) {
+  return line_index * kMaxLineSize * kMaxSizes + left * kMaxSizes + index;
 }
 
 std::int64_t Count(const std::string& line, const std::vector<int> sizes,
                    int line_index, int left, int right, int index) {
-  std::int64_t* dp = &(kDp[ToIndex(line_index, left, right, index)]);
+  std::int64_t* dp = &(kDp[ToIndex(line_index, left, index)]);
   if (*dp != 0) return *dp - 1;
   std::int64_t res = 0;
   if (left >= right) {
