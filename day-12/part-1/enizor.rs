@@ -1,4 +1,4 @@
-use aoc::enizor::day12::count_arrangements;
+use aoc::enizor::day12::count_without_copies;
 use core::panic;
 use std::env::args;
 use std::time::Instant;
@@ -42,7 +42,7 @@ fn run(input: &str) -> usize {
         }
         cur += 1;
         row_start = cur;
-        res += count_arrangements(row, &mut groups);
+        res += count_without_copies(row, &groups);
     }
     res
 }
