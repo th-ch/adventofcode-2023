@@ -1,3 +1,5 @@
+use crate::enizor::utils::debug_ascii;
+
 const DAMAGED: u8 = b'.';
 const OPERATIONAL: u8 = b'#';
 const UNKNOWN: u8 = b'?';
@@ -190,8 +192,17 @@ pub fn count_arrangements(mut row: &[u8], groups: &mut [usize]) -> usize {
         res
     } else {
         // it must be part of a group, try all possibilities
+        // Use the rightmost contiguous # starting at run_length
+        let already_set = 1 + row[run_length + 1..]
+            .iter()
+            .position(|s| *s != OPERATIONAL)
+            .unwrap();
+        let end_group = run_length + already_set;
         let mut res = 0;
         for k in 0..groups_len {
+            if groups[k] < already_set {
+                continue;
+            }
             // try to use the kth group for it
             let mut size = groups_size(&groups[..k]);
             // there must be a . between the preceding groups and the located #
@@ -204,23 +215,21 @@ pub fn count_arrangements(mut row: &[u8], groups: &mut [usize]) -> usize {
             }
             // the kth group will have `offset` # before the located one
             // to still be able to fit everything, we must have size+offset<=run_length
-            // we also need offset < groups[k]
-            let max_offset = groups[k].min(run_length - size + 1);
+            // we also need offset+already_set <= groups[k]
+            let max_offset = (groups[k] - already_set + 1).min(run_length - size + 1);
             // split into [0..run_length-2-offset].[run_length-offset..run_length-offset+group[k]]
             for offset in (0..max_offset).rev() {
                 let leeway = run_length - offset - size;
                 // number of ways to fit the first `k` groups in to the run
                 // times number of ways of using the located # as the start
-                groups[k] -= offset + 1;
+                groups[k] -= offset + already_set;
                 // Ensure rest can still be placed
-                if groups_size(&groups[k..]) > row_len - run_length - 1 {
-                    groups[k] += offset + 1;
-                    // assert_eq!(count_arrangements(b"??#?????#?????", &mut [5,7]), 1);
+                if groups_size(&groups[k..]) > row_len - end_group {
+                    groups[k] += offset + already_set;
                     break;
                 }
-                res +=
-                    COUNT_LEEWAY[leeway][k] * count_start(&row[run_length + 1..], &mut groups[k..]);
-                groups[k] += offset + 1;
+                res += COUNT_LEEWAY[leeway][k] * count_start(&row[end_group..], &mut groups[k..]);
+                groups[k] += offset + already_set;
             }
         }
         res
