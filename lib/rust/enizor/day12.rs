@@ -75,8 +75,8 @@ fn can_end(row: &[u8], groups: &[usize]) -> bool {
     // count_arrangements(&row[..row_len - g - 1], &mut groups[..groups_len - 1], cache)
 }
 
-const MAX_LEEWAY: usize = 40;
-const MAX_GROUPS: usize = 40;
+const MAX_LEEWAY: usize = 64;
+const MAX_GROUPS: usize = 64;
 const COUNT_LEEWAY: [[usize; MAX_GROUPS]; MAX_LEEWAY] = count_leeway();
 const MAX_SIZE: usize = 64;
 
