@@ -25,6 +25,10 @@ pub fn beat_race(t: f64, d: f64) -> usize {
     (ht + hdelta).ceil() as usize - 1 - (ht - hdelta).floor() as usize
 }
 
+pub fn debug_ascii(bytes: &[u8]) -> String {
+    String::from_utf8(bytes.to_vec()).unwrap()
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
