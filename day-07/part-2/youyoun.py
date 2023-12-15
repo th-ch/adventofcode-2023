@@ -6,10 +6,11 @@ from collections import Counter
 def eval_hand(hand_str: str):
     hand_counter = Counter(hand_str)
     if "J" in hand_counter:
+        if hand_counter["J"] == 5:
+            return 6
         jokers = hand_counter.pop("J")
         for c in hand_counter:
             hand_counter[c] += jokers
-
     if len(hand_counter) == 1:
         return 6
     if len(hand_counter) == 2:
