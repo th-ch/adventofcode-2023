@@ -317,6 +317,14 @@ name = "day-10-part-2-enizor"
 path = "./day-10/part-2/enizor.rs"
 
 [[bin]]
+name = "day-07-part-1-youyoun"
+path = "./day-07/part-1/youyoun.rs"
+
+[[bin]]
+name = "day-07-part-2-youyoun"
+path = "./day-07/part-2/youyoun.rs"
+
+[[bin]]
 name = "day-12-part-1-enizor"
 path = "./day-12/part-1/enizor.rs"
 
