@@ -51,7 +51,7 @@ def move_beam(beam, grid, w, h):
 
 def count_energized(grid, w, h, start):
     beams = deque([start])
-    seen = set([start])
+    seen = set()
     while beams:
         beam = beams.popleft()
         next_beams = move_beam(beam, grid, w, h)
@@ -77,7 +77,7 @@ class ThChSubmission(SubmissionPy):
                 grid[y][x] = char
         w, h = x + 1 , y + 1
 
-        return count_energized(grid, w, h, (0, 0, RIGHT))
+        return count_energized(grid, w, h, (-1, 0, RIGHT))
 
 
 def test_th_ch():

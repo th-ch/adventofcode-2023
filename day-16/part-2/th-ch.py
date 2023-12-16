@@ -22,14 +22,14 @@ class ThChSubmission(SubmissionPy):
 
         max_energized = 0
         for y in range(h):
-            energized = part1.count_energized(grid, w, h, (0, y, part1.RIGHT))
+            energized = part1.count_energized(grid, w, h, (-1, y, part1.RIGHT))
             max_energized = max(max_energized, energized)
-            energized = part1.count_energized(grid, w, h, (w-1, y, part1.LEFT))
+            energized = part1.count_energized(grid, w, h, (w, y, part1.LEFT))
             max_energized = max(max_energized, energized)
         for x in range(w):
-            energized = part1.count_energized(grid, w, h, (x, 0, part1.DOWN))
+            energized = part1.count_energized(grid, w, h, (x, -1, part1.DOWN))
             max_energized = max(max_energized, energized)
-            energized = part1.count_energized(grid, w, h, (x, h-1, part1.UP))
+            energized = part1.count_energized(grid, w, h, (x, h, part1.UP))
             max_energized = max(max_energized, energized)
 
         return max_energized
