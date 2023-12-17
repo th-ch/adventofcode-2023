@@ -46,15 +46,20 @@ impl<'a> StrGrid<'a> {
     }
     /// Constructs a Grid referencing the input string.
     /// The lines must be separated by \n
+    #[inline(always)]
     pub const fn cur(&self, pos: Position) -> usize {
         pos.x + self.width * pos.y
     }
+
+    #[inline(always)]
     pub const fn from_cur(&self, idx: usize) -> Position {
         Position {
             x: idx % self.width,
             y: idx / self.width,
         }
     }
+
+    #[inline(always)]
     pub fn step(&self, pos: Position, dir: Direction) -> Option<Position> {
         let mut pos2 = pos;
         if self.step_mut(&mut pos2, dir) {
@@ -64,6 +69,7 @@ impl<'a> StrGrid<'a> {
         }
     }
 
+    #[inline(always)]
     pub fn step_mut(&self, pos: &mut Position, dir: Direction) -> bool {
         match (dir, pos.x, pos.y) {
             (Left, 0, _) => return false,
@@ -82,6 +88,7 @@ impl<'a> StrGrid<'a> {
 impl<'a> Index<Position> for StrGrid<'a> {
     type Output = u8;
 
+    #[inline(always)]
     fn index(&self, pos: Position) -> &Self::Output {
         &self.data[self.cur(pos)]
     }
