@@ -109,10 +109,10 @@ int FindShortest(const std::string& input) {
       int next_pos = pos + next_dir;
       if (!IsValid(next_pos)) continue;
       int next_heat = heat + HeatLoss(input[next_pos]);
-      if (next_pos == kInputSize - 1) {
+      int next_steps = (next_dir == direction) ? steps + 1 : 1;
+      if (next_pos == kInputSize - 1 && next_steps >= 4) {
         return next_heat;
       }
-      int next_steps = (next_dir == direction) ? steps + 1 : 1;
       pq.push({next_heat, StateToIndex(next_pos, next_dir, next_steps)});
     }
   }
