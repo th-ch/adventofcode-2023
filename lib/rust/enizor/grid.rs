@@ -1,7 +1,7 @@
 use std::ops::Index;
 
 #[repr(u8)]
-#[derive(Debug, Default, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Default, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 pub enum Direction {
     Left = 0b1,
     #[default]
@@ -13,7 +13,7 @@ pub enum Direction {
 use Direction::*;
 pub const ALL_DIRECTIONS: [Direction; 4] = [Left, Right, Up, Down];
 
-#[derive(Debug, Default, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Default, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 pub struct Position {
     pub x: usize,
     pub y: usize,

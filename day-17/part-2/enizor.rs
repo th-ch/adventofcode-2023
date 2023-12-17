@@ -1,5 +1,6 @@
-use aoc::enizor::bitset::{bitset_size, VecBitSet};
 use aoc::enizor::grid::*;
+use std::cmp::Reverse;
+use std::collections::BinaryHeap;
 use std::env::args;
 use std::time::Instant;
 
@@ -11,88 +12,57 @@ fn main() {
     println!("{}", output);
 }
 
-/// values of heat loss for different _outbound_ directions Horizontal/Vertical
-/// i.e. this value was reached using Vertical/Horizontal
-#[derive(Debug, Clone)]
-struct HeatLoss {
-    values: [usize; 2],
-}
 use Direction::*;
 
-impl std::ops::Index<Direction> for HeatLoss {
-    type Output = usize;
-
-    fn index(&self, dir: Direction) -> &Self::Output {
-        match dir {
-            Left => &self.values[0],
-            Right => &self.values[0],
-            Up => &self.values[1],
-            Down => &self.values[1],
-        }
-    }
-}
-
-impl std::ops::IndexMut<Direction> for HeatLoss {
-    fn index_mut(&mut self, dir: Direction) -> &mut Self::Output {
-        match dir {
-            Left => &mut self.values[0],
-            Right => &mut self.values[0],
-            Up => &mut self.values[1],
-            Down => &mut self.values[1],
-        }
-    }
-}
-
-impl std::default::Default for HeatLoss {
-    fn default() -> Self {
-        Self {
-            values: [usize::MAX; 2],
-        }
-    }
-}
+const DIRECTIONS_BY_AXIS: [[Direction; 2]; 2] = [[Up, Down], [Left, Right]];
 
 struct HeatLossMap<'a> {
     grid: StrGrid<'a>,
-    heat_loss: Vec<HeatLoss>,
+    heat_loss: Vec<[usize; 2]>,
 }
 
 impl<'a> HeatLossMap<'a> {
     fn new(input: &'a str) -> Self {
         let grid = StrGrid::from_input(input);
         Self {
-            heat_loss: vec![HeatLoss::default(); grid.data.len()],
+            heat_loss: vec![[usize::MAX; 2]; grid.data.len()],
             grid,
         }
     }
-    fn compute_loss(&mut self) {
-        let mut positions = VecBitSet::new(bitset_size(self.grid.data.len()));
-        positions.set(0usize);
-        while let Some(cur) = positions.first_set() {
-            positions.reset(cur);
-            let p = self.grid.from_cur(cur);
-            for out_dir in ALL_DIRECTIONS {
+
+    fn compute_loss(&mut self) -> usize {
+        let mut queue = BinaryHeap::with_capacity(self.grid.width);
+        queue.push((Reverse(0), Reverse(0), Position::default(), false));
+        queue.push((Reverse(0), Reverse(0), Position::default(), true));
+        let goal = Position {
+            x: self.grid.width - 2,
+            y: self.grid.height - 1,
+        };
+        while let Some((Reverse(_heuristic), Reverse(cost), p, vertical)) = queue.pop() {
+            if p == goal {
+                return cost;
+            }
+            let out = DIRECTIONS_BY_AXIS[vertical as usize];
+            for out_dir in out {
                 let mut pos = p;
-                let current_loss = self.heat_loss[cur][out_dir];
-                if current_loss == usize::MAX {
-                    continue;
-                }
+                let current_loss = cost;
                 let mut new_loss = current_loss;
                 for step in 0..10 {
                     if self.grid.step_mut(&mut pos, out_dir) {
-                        let new_cur = self.grid.cur(pos);
                         new_loss += (self.grid[pos] - b'0') as usize;
                         if step >= 3 {
-                            let new_dirs = if (out_dir as u8) < 3 {
-                                [Up, Down]
-                            } else {
-                                [Left, Right]
-                            };
-                            for new_dir in new_dirs {
-                                let old_loss = &mut self.heat_loss[new_cur][new_dir];
-                                if *old_loss > new_loss {
-                                    *old_loss = new_loss;
-                                    positions.set(new_cur)
-                                }
+                            let new_cur = self.grid.cur(pos);
+                            let h = pos.x.abs_diff(goal.x) + pos.y.abs_diff(goal.y);
+                            let new_vert = !vertical;
+                            let old_loss = &mut self.heat_loss[new_cur][new_vert as usize];
+                            if *old_loss > new_loss {
+                                *old_loss = new_loss;
+                                queue.push((
+                                    Reverse(new_loss + h),
+                                    Reverse(new_loss),
+                                    pos,
+                                    new_vert,
+                                ));
                             }
                         }
                     } else {
@@ -102,20 +72,13 @@ impl<'a> HeatLossMap<'a> {
                 }
             }
         }
+        panic!("Failed to reach the goal!")
     }
 }
 
 fn run(input: &str) -> usize {
     let mut map = HeatLossMap::new(input);
-    let start_corner = map.grid.cur(Position { x: 0, y: 0 });
-    map.heat_loss[start_corner] = HeatLoss { values: [0; 2] };
-    map.compute_loss();
-    let end_corner = map.grid.cur(Position {
-        x: map.grid.width - 2,
-        y: map.grid.height - 1,
-    });
-
-    *map.heat_loss[end_corner].values.iter().min().unwrap()
+    map.compute_loss()
 }
 
 #[cfg(test)]
