@@ -21,7 +21,6 @@ struct Contraption<'a> {
 impl<'a> Contraption<'a> {
     fn new(input: &'a str) -> Self {
         let grid = StrGrid::from_input(input);
-        dbg!(&grid);
         Self {
             grid_beams: vec![0; grid.data.len()],
             grid,
