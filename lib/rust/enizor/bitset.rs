@@ -65,16 +65,16 @@ impl<T: AsMut<[u64]> + AsRef<[u64]>> BitSet<T> {
         res
     }
 
-    pub fn first_set(&self) -> u32 {
+    pub fn first_set(&self) -> Option<usize> {
         let mut res = 0;
         for &x in self.bits.as_ref() {
             if x > 0 {
-                res += x.trailing_zeros();
-                return res;
+                res += x.trailing_zeros() as usize;
+                return Some(res);
             }
             res += 64;
         }
-        res
+        None
     }
 }
 
@@ -165,12 +165,16 @@ mod tests {
     fn run_test() {
         let mut set = BitSet::<Vec<u64>>::new(250u8);
         set.set(75u8);
-        assert_eq!(set.first_set(), 75);
+        assert_eq!(set.first_set(), Some(75));
         set.set(36u8);
-        assert_eq!(set.first_set(), 36);
+        assert_eq!(set.first_set(), Some(36));
         set.set(141u8);
-        assert_eq!(set.first_set(), 36);
+        assert_eq!(set.first_set(), Some(36));
         set.reset(36u8);
-        assert_eq!(set.first_set(), 75);
+        assert_eq!(set.first_set(), Some(75));
+        set.reset(75u8);
+        assert_eq!(set.first_set(), Some(141));
+        set.reset(141u8);
+        assert_eq!(set.first_set(), None);
     }
 }
