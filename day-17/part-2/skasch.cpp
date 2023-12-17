@@ -89,22 +89,16 @@ std::vector<int> ValidDirections(int direction, int steps) {
   }
 }
 
-int Distance(int pos1) {
-  return (kSize - 1 - pos1 % (kSize + 1)) + (kSize - 1 - pos1 / (kSize + 1));
-}
-
-using PQ = std::priority_queue<std::tuple<int, int, int>,
-                               std::vector<std::tuple<int, int, int>>,
-                               std::greater<std::tuple<int, int, int>>>;
+using PQ =
+    std::priority_queue<std::pair<int, int>, std::vector<std::pair<int, int>>,
+                        std::greater<std::pair<int, int>>>;
 
 int FindShortest(const std::string& input) {
   PQ pq;
-  pq.push({Distance(1) + HeatLoss(input[1]), HeatLoss(input[1]),
-           StateToIndex(1, kRight, 1)});
-  pq.push({Distance(kSize + 1) + HeatLoss(input[kSize + 1]),
-           HeatLoss(input[kSize + 1]), StateToIndex(kSize + 1, kDown, 1)});
+  pq.push({HeatLoss(input[1]), StateToIndex(1, kRight, 1)});
+  pq.push({HeatLoss(input[kSize + 1]), StateToIndex(kSize + 1, kDown, 1)});
   while (!pq.empty()) {
-    auto [_, heat, index] = pq.top();
+    auto [heat, index] = pq.top();
     pq.pop();
     int pos = IndexToPos(index);
     if (kVisited[index]) continue;
@@ -119,8 +113,7 @@ int FindShortest(const std::string& input) {
         return next_heat;
       }
       int next_steps = (next_dir == direction) ? steps + 1 : 1;
-      pq.push({Distance(next_pos) + next_heat, next_heat,
-               StateToIndex(next_pos, next_dir, next_steps)});
+      pq.push({next_heat, StateToIndex(next_pos, next_dir, next_steps)});
     }
   }
   throw std::invalid_argument("No path found.");
