@@ -11,116 +11,49 @@ fn main() {
     println!("{}", output);
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-enum Direction {
-    North,
-    East,
-    South,
-    West,
-}
+use aoc::enizor::grid::*;
 use Direction::*;
 
-const ALL_DIRECTIONS: [Direction; 4] = [North, East, South, West];
-
 #[derive(Debug, Clone, Copy)]
-struct Grid<'a> {
-    length: usize,
-    height: usize,
-    bytes: &'a [u8],
+struct Animal<'a> {
+    pos: Position,
+    grid: StrGrid<'a>,
 }
 
-impl<'a> Grid<'a> {
-    fn new(bytes: &'a [u8]) -> Self {
-        let l = bytes
-            .iter()
-            .position(|b| *b == b'\n')
-            .expect("No line ending!")
-            + 1;
-        let h = (bytes.len() + (l - 1)) / l;
-        Self {
-            length: l,
-            height: h,
-            bytes,
-        }
-    }
-    fn find_animal(&'a self) -> Option<Position<'a>> {
-        self.bytes.iter().position(|b| *b == b'S').map(|idx| {
-            let mut animal = Position {
-                x: 0,
-                y: 0,
-                grid: self,
-            };
-            animal.set_index(idx);
-            animal
+impl<'a> Animal<'a> {
+    fn init(input: &'a str) -> Option<Self> {
+        input.as_bytes().iter().position(|b| *b == b'S').map(|idx| {
+            let grid = StrGrid::from_input(input);
+            Animal {
+                pos: grid.from_cur(idx),
+                grid,
+            }
         })
     }
-}
-
-#[derive(Debug, Clone, Copy)]
-struct Position<'a> {
-    x: usize,
-    y: usize,
-    grid: &'a Grid<'a>,
-}
-
-impl<'a> Position<'a> {
-    fn as_index(&self) -> usize {
-        self.x + self.grid.length * self.y
-    }
-    fn set_index(&mut self, idx: usize) {
-        self.x = idx % self.grid.length;
-        self.y = idx / self.grid.length;
-    }
-    fn advance(&mut self, dir: Direction) -> Option<usize> {
-        let max_y = self.grid.height - 1;
-        let max_x = self.grid.length - 2;
-        match (dir, self.x, self.y) {
-            (North, _, 0) => None,
-            (North, _, _) => {
-                self.y -= 1;
-                Some(self)
-            }
-            (South, _, y) if y == max_y => None,
-            (South, _, _) => {
-                self.y += 1;
-                Some(self)
-            }
-            (West, _, 0) => None,
-            (West, _, _) => {
-                self.x -= 1;
-                Some(self)
-            }
-            (East, _, x) if x == max_x => None,
-            (East, _, _) => {
-                self.x += 1;
-                Some(self)
-            }
-        }
-        .map(|p| p.as_index())
-    }
     fn check_pipe(&self, dir: Direction) -> Option<Direction> {
-        let pipe = self.grid.bytes[self.as_index()];
+        let pipe = self.grid[self.pos];
         match (dir, pipe) {
-            (North, b'F') => Some(East),
-            (North, b'7') => Some(West),
-            (North, b'|') => Some(North),
-            (South, b'L') => Some(East),
-            (South, b'J') => Some(West),
-            (South, b'|') => Some(South),
-            (East, b'J') => Some(North),
-            (East, b'7') => Some(South),
-            (East, b'-') => Some(East),
-            (West, b'L') => Some(North),
-            (West, b'F') => Some(South),
-            (West, b'-') => Some(West),
+            (Up, b'F') => Some(Right),
+            (Up, b'7') => Some(Left),
+            (Up, b'|') => Some(Up),
+            (Down, b'L') => Some(Right),
+            (Down, b'J') => Some(Left),
+            (Down, b'|') => Some(Down),
+            (Right, b'J') => Some(Up),
+            (Right, b'7') => Some(Down),
+            (Right, b'-') => Some(Right),
+            (Left, b'L') => Some(Up),
+            (Left, b'F') => Some(Down),
+            (Left, b'-') => Some(Left),
             _ => None,
         }
     }
     fn try_loop(mut self, mut dir: Direction) -> Option<usize> {
-        let mut loop_bitset = VecBitSet::new(bitset_size(self.grid.bytes.len()));
-        let start = self.as_index();
+        let mut loop_bitset = VecBitSet::new(bitset_size(self.grid.data.len()));
+        let start = self.grid.cur(self.pos);
         let start_dir = dir;
-        while let Some(idx) = self.advance(dir) {
+        while self.grid.step_mut(&mut self.pos, dir) {
+            let idx = self.grid.cur(self.pos);
             loop_bitset.set(idx);
             if idx == start {
                 // compute interior: on a given line:
@@ -132,17 +65,17 @@ impl<'a> Position<'a> {
                 // treat both L & J as | and F & 7 as - to obtain the same result
                 // compute the equivalent for the start S using the dir-dir_start chain
                 let start_toggles = match (dir, start_dir) {
-                    (North, North) => true, // |
-                    (South, South) => true, // |
-                    (South, East) => true,  // L
-                    (West, North) => true,  // L
-                    (South, West) => true,  // J
-                    (East, North) => true,  // J
+                    (Up, Up) => true,      // |
+                    (Down, Down) => true,  // |
+                    (Down, Right) => true, // L
+                    (Left, Up) => true,    // L
+                    (Down, Left) => true,  // J
+                    (Right, Up) => true,   // J
                     _ => false,
                 };
                 let mut count = 0;
                 let mut in_interior = false;
-                for (i, b) in self.grid.bytes.iter().enumerate() {
+                for (i, b) in self.grid.data.iter().enumerate() {
                     if *b == b'\n' {
                         // we should be back at exterior
                         assert!(!in_interior);
@@ -171,8 +104,7 @@ impl<'a> Position<'a> {
 }
 
 fn run(input: &str) -> usize {
-    let grid = Grid::new(input.as_bytes());
-    let animal = grid.find_animal().expect("No animal!");
+    let animal = Animal::init(input).expect("No animal!");
     ALL_DIRECTIONS
         .iter()
         .flat_map(|dir| animal.try_loop(*dir))
