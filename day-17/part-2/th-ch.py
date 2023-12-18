@@ -30,7 +30,7 @@ class ThChSubmission(SubmissionPy):
                     Q.put((0, source))
                 else:
                     for direction in [UP, DOWN, LEFT, RIGHT]:
-                        for nb_in_direction in range(1, 10):
+                        for nb_in_direction in range(1, 11):
                             Q.put((dist[(x, y, direction, nb_in_direction)], (x, y, direction, nb_in_direction)))
 
 
@@ -61,7 +61,7 @@ class ThChSubmission(SubmissionPy):
 
         d = inf
         for direction in [UP, DOWN, LEFT, RIGHT]:
-            for nb_in_direction in range(1, 10):
+            for nb_in_direction in range(4, 11):
                 if dist[(w-1, h-1, direction, nb_in_direction)] < d:
                     d = dist[(w-1, h-1, direction, nb_in_direction)]
         return d
@@ -71,6 +71,18 @@ def test_th_ch():
     """
     Run `python -m pytest ./day-17/part-2/th-ch.py` to test the submission.
     """
+    assert (
+        ThChSubmission().run(
+            """
+111111111111
+999999999991
+999999999991
+999999999991
+999999999991
+""".strip()
+        )
+        == 71
+    )
     assert (
         ThChSubmission().run(
             """
