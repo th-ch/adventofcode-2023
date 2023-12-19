@@ -1,4 +1,4 @@
-name: CI
+name: Leaderboard
 
 on:  # yamllint disable-line rule:truthy
   push:
@@ -67,3 +67,4 @@ jobs:
     # Build
     - name: Build
       run: ./leaderboard.sh
+      continue-on-error: true
