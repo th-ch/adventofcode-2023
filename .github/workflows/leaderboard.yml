@@ -68,3 +68,5 @@ jobs:
     - name: Build
       run: ./leaderboard.sh
       continue-on-error: true
+      env:
+        NETLIFY_AUTH: ${{ secrets.NETLIFY_AUTH }}
