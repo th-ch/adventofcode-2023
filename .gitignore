@@ -3,6 +3,7 @@
 .DS_Store
 .idea/
 .venv
+.env
 venv
 target/
 *.rs.bk
@@ -21,8 +22,12 @@ Pipfile
 Pipfile.lock
 
 zig-cache/
+leaderboard/*.html
 
 # Vim files
 *.swp
 
 stable
+
+# Local Netlify folder
+.netlify

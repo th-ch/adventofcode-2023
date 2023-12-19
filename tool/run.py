@@ -12,7 +12,7 @@ from tool.distribution import get_time_distribution
 from tool.model import Result, Submission
 from tool.runners.wrapper import SubmissionWrapper
 from tool.utils import BColor
-
+from tool.leaderboard.leaderboard import generate_leaderboard
 
 class DifferentAnswersException(Exception):
     pass
@@ -38,6 +38,7 @@ def run(
     problems = discovery.get_problems(days, parts, all_days_parts)
     printed_day_header = set()
     errors = []
+    all_results = []
 
     for problem in problems:
         if problem.day not in printed_day_header:
@@ -81,12 +82,18 @@ def run(
         elif expand:
             print_expanded_results(problem, results_by_input)
         else:
-            print_aggregated_results(problem, results_by_author, print_time_dist)
+            results = get_aggregated_results(problem, results_by_author, print_time_dist)
+            print_aggregated_header()
+            print_results(results, print_time_dist)
+            all_results.append(results)
 
     for err in errors:
         print(err, file=sys.stderr)
     if errors:
         exit(1)
+
+    if len(all_results) > 0 and all_days_parts:
+        generate_leaderboard(all_results)
 
 
 def run_submission(problem, submission, input, previous, no_debug):
@@ -212,11 +219,12 @@ def print_restrict_results(problem, results_by_author):
             results.append(result)
     print_results(results)
 
-
-def print_aggregated_results(problem, results_by_author, print_time_dist=False):
+def print_aggregated_header():
     print("---------------------------------------------------")
     print("Avg over all inputs")
     print("---------------------------------------------------")
+
+def get_aggregated_results(problem, results_by_author, print_time_dist=False):
     results = []
     # Loop for all authors, get all the results they produced
     for author, results_by_input in results_by_author.items():
@@ -251,7 +259,7 @@ def print_aggregated_results(problem, results_by_author, print_time_dist=False):
                 res.duration /= count_by_language[lang]
             res.all_durations = durations_by_language[lang]
             results.append(res)
-    print_results(results, print_time_dist)
+    return results
 
 
 def print_day_header(problem):
