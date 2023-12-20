@@ -2,7 +2,7 @@ use std::ops::{BitAnd, BitAndAssign, BitOr, BitOrAssign};
 
 #[inline(always)]
 pub const fn bitset_size(n: usize) -> usize {
-    1 + (n / 64)
+    1 + ((n - 1) / 64)
 }
 
 pub type ArrayBitSet<const N: usize> = BitSet<[u64; N]>;
@@ -65,6 +65,12 @@ impl<T: AsMut<[u64]> + AsRef<[u64]>> BitSet<T> {
     pub fn reset(&mut self, n: impl Into<usize>) {
         let p = n.into();
         self.bits.as_mut()[p / 64] &= !(1 << (p % 64))
+    }
+
+    #[inline(always)]
+    pub fn toggle(&mut self, n: impl Into<usize>) {
+        let p = n.into();
+        self.bits.as_mut()[p / 64] ^= 1 << (p % 64)
     }
 
     #[inline(always)]
