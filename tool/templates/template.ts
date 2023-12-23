@@ -7,6 +7,8 @@ const run = (s: string): unknown => {
   return s;
 };
 
+console.assert(run(`example`) === "solution");
+
 const start = performance.now();
 const answer = run(Deno.args[0]);
 
