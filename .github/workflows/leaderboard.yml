@@ -26,7 +26,7 @@ jobs:
     # The default image natively supports bash, c/c++, dotnet, go, java, julia, python, ruby, rust
     # For new languages, see https://github.com/actions/runner-images/blob/5dd62e7/images/linux first
 
-    - uses: actions/setup-python@v4
+    - uses: actions/setup-python@v5
       with:
         python-version: '3.10'
         cache: pip
