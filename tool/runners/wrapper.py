@@ -3,22 +3,22 @@ Wrapper class handling the communication between the main python process and
 the funky language subprocesses.
 """
 
-from tool.runners.python import SubmissionPy
+from tool.runners.python import WithDebugStack
 
 
-class SubmissionWrapper(SubmissionPy):
-    def __init__(self):
-        SubmissionPy.__init__(self)
+class SubmissionWrapper(WithDebugStack):
+    def __init__(self) -> None:
+        super().__init__()
 
     # Method that every class implementing SubmssionWrapper should override
-    def exec(self, input):
-        pass
+    def exec(self, input: str) -> str:
+        raise NotImplementedError
 
-    def run(self, input):
+    def run(self, input: str) -> tuple[str | None, str | None, list[str]]:
         stdout = self.exec(input)
         lines = stdout.split("\n")[:-1]
 
-        duration_line = None
+        duration_line: str | None = None
         parse = False
         for line in lines:
             if line.startswith("_duration:"):
@@ -35,5 +35,4 @@ class SubmissionWrapper(SubmissionPy):
             return None, duration_line, []
         if parse:
             return "\n".join(lines), duration_line, []
-        else:
-            return lines[-1], duration_line, lines[:-1]
+        return lines[-1], duration_line, lines[:-1]

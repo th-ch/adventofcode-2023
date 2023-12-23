@@ -16,12 +16,12 @@ supported_languages = []
 RANDOM_LANGUAGE = "random"
 
 
-def get_accepted_languages_references():
+def get_accepted_languages_references() -> list[str]:
     # We add random to permit this possibility in the CLI
     return get_supported_languages() + [RANDOM_LANGUAGE]
 
 
-def get_supported_languages():
+def get_supported_languages() -> list[str]:
     global supported_languages
     if not supported_languages:
         supported_languages = [
@@ -32,7 +32,7 @@ def get_supported_languages():
     return supported_languages
 
 
-def get_latest_problem():
+def get_latest_problem() -> Problem | None:
     days = get_all_days()
     if not days:
         return
@@ -44,12 +44,10 @@ def get_latest_problem():
     return Problem(latest_day, latest_part)
 
 
-def get_all_problems(days=None):
-    if not days:
+def get_all_problems(days: list[int] | None = None) -> list[Problem]:
+    if days is None:
         days = get_all_days()
-    if not days:
-        return []
-    problems = []
+    problems: list[Problem] = []
     for day in days:
         for part in get_parts_for_day(day):
             problems.append(Problem(day, part))
@@ -57,47 +55,39 @@ def get_all_problems(days=None):
     return problems
 
 
-def get_all_days():
-    return sorted(list(map(lambda x: int(x[-2:]), list(glob.glob(_DAY_PATH_PATTERN)))))
+def get_all_days() -> list[int]:
+    return sorted(int(path[-2:]) for path in glob.glob(_DAY_PATH_PATTERN))
 
 
-def get_parts_for_day(day):
+def get_parts_for_day(day: int) -> list[int]:
     return sorted(
-        list(
-            map(
-                lambda x: int(x[-1]),
-                list(
-                    glob.glob(
-                        os.path.join(Problem.day_to_path(day), _PART_PATH_PATTERN)
-                    )
-                ),
-            )
+        int(path[-1])
+        for path in glob.glob(
+            os.path.join(Problem.day_to_path(day), _PART_PATH_PATTERN)
         )
     )
 
 
-def get_days_for_part(part):
+def get_days_for_part(part: int) -> list[int]:
     return sorted(
-        list(
-            map(
-                lambda x: int(x[4:6]),
-                list(glob.glob(os.path.join(_DAY_PATH_PATTERN, "part-%d" % part))),
-            )
-        )
+        int(path[4:6])
+        for path in glob.glob(os.path.join(_DAY_PATH_PATTERN, f"part-{part}"))
     )
 
 
-def get_problems(days, parts, all_days_parts=False):
+def get_problems(
+    days: list[int] | None, parts: list[int] | None, all_days_parts: bool = False
+) -> list[Problem]:
     problems = []
     if all_days_parts:
         problems = get_all_problems()
-    elif days and parts:
+    elif days is not None and parts is not None:
         problems = [
             problem for problem in get_all_problems(days) if problem.part in parts
         ]
-    elif days:
+    elif days is not None:
         problems = get_all_problems(days)
-    elif parts:
+    elif parts is not None:
         latest = get_latest_problem()
         if not latest:
             return []
@@ -116,9 +106,13 @@ def get_problems(days, parts, all_days_parts=False):
 
 
 def get_submissions(
-    problem, authors=None, ignored_authors=None, languages=None, force=False
-):
-    if not languages:
+    problem: Problem,
+    authors: list[str] | None = None,
+    ignored_authors: list[str] | None = None,
+    languages: list[str] | None = None,
+    force: bool = False,
+) -> list[Submission]:
+    if languages is None:
         if force:
             languages = LANGUAGES
         else:
@@ -130,28 +124,28 @@ def get_submissions(
 
     extensions = set(languages)
 
-    submissions = []
+    submissions: list[Submission] = []
     for _, _, files in walk(problem.path()):
         for filename in files:
             submission, ext = filename.split(".", 1)
             author = os.path.basename(submission)
             if (ext not in extensions) or filename.endswith("_test.go"):
                 continue
-            if ignored_authors and author in ignored_authors:
+            if ignored_authors is not None and author in ignored_authors:
                 continue
-            if authors and author not in authors:
+            if authors is not None and author not in authors:
                 continue
             submissions.append(Submission(problem, author, ext))
         break  # stop at depth 1
     return submissions
 
 
-def get_inputs(problem):
+def get_inputs(problem: Problem) -> list[Input]:
     inputs_path = os.path.join(problem.day_path(), "input")
     if not os.path.exists(inputs_path):
         return []
 
-    inputs = []
+    inputs: list[Input] = []
     for input_file in glob.glob(os.path.join(inputs_path, "*.txt")):
         author = os.path.splitext(os.path.basename(input_file))[0].lower()
         with open(input_file, "r") as content_file:

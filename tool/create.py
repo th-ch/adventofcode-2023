@@ -5,6 +5,7 @@ import os.path
 import random
 import re
 import sys
+from typing import NamedTuple
 
 # project
 import tool.discovery as discovery
@@ -18,26 +19,29 @@ class FileNotEmptyException(Exception):
     pass
 
 
-def make_dirs(day, parts):
-    dirs = dict()
+class Dirs(NamedTuple):
+    input: str
+    parts: list[str]
 
+
+def make_dirs(day: int, parts: list[int]) -> Dirs:
     # Create day directory
-    day_dir = "./day-{:02d}".format(day)
+    day_dir = f"./day-{day:02d}"
     mkdirp(day_dir)
 
     # Create input directory
-    dirs["input"] = f"{day_dir}/input"
-    mkdirp(dirs["input"])
+    input_dir = f"{day_dir}/input"
+    mkdirp(input_dir)
 
     # Create part directories
-    dirs["parts"] = [f"{day_dir}/part-{part}" for part in parts]
-    for part_dir in dirs["parts"]:
+    part_dirs: list[str] = [f"{day_dir}/part-{part}" for part in parts]
+    for part_dir in part_dirs:
         mkdirp(part_dir)
 
-    return dirs
+    return Dirs(input_dir, part_dirs)
 
 
-def create_submission(author, path, language):
+def create_submission(author: str, path: str, language: str) -> None:
     # Build submission file name
     submission_file = os.path.join(path, f"{author}.{language}")
 
@@ -91,7 +95,7 @@ def create_submission(author, path, language):
             print(f"[+] created symlink in {workspace_submission_file}")
 
 
-def create_input(author, path):
+def create_input(author: str, path: str) -> None:
     # Build input file name
     input_file = os.path.join(path, f"{author}.txt")
 
@@ -105,12 +109,12 @@ def create_input(author, path):
     print(f"[+] created {input_file}")
 
 
-def create(day, part, author, language):
-    if not day:
+def create(day: int | None, part: int, author: str | None, language: str) -> None:
+    if day is None:
         latest = discovery.get_latest_problem()
         day = 1 if not latest else (latest.day + 1)
 
-    if not author:
+    if author is None:
         author = CONFIG.user
 
     if not author:
@@ -134,7 +138,7 @@ aoc config <username> <language>""",
 
     # Create input file
     try:
-        create_input(author, dirs["input"])
+        create_input(author, dirs.input)
     except FileNotEmptyException:
         pass
     except Exception as e:
@@ -142,7 +146,7 @@ aoc config <username> <language>""",
         exit(1)
 
     # Create submission files
-    for submission_path in dirs["parts"]:
+    for submission_path in dirs.parts:
         try:
             create_submission(author, submission_path, language)
         except FileNotEmptyException as e:
