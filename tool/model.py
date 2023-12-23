@@ -7,7 +7,6 @@ import os.path
 from tool.parser import Parser
 from tool.runners import ext_by_language, load_submission_runnable
 from tool.utils import load_subclass
-from typing import Tuple
 
 
 class Problem(object):
@@ -18,7 +17,7 @@ class Problem(object):
     def __init__(self, day: int, part: int):
         self.day = day
         self.part = part
-        self._parser_cache: Tuple[bool, Parser | None] = (False, None)
+        self._parser_cache: tuple[bool, Parser | None] = (False, None)
 
     def __repr__(self):
         return f"Problem{{day-{self.day:02d}, part-{self.part}}}"

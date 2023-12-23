@@ -4,7 +4,6 @@ the funky language subprocesses.
 """
 
 from tool.runners.python import WithDebugStack
-from typing import Tuple
 
 
 class SubmissionWrapper(WithDebugStack):
@@ -15,7 +14,7 @@ class SubmissionWrapper(WithDebugStack):
     def exec(self, input: str) -> str:
         raise NotImplementedError
 
-    def run(self, input: str) -> Tuple[str | None, str | None, list[str]]:
+    def run(self, input: str) -> tuple[str | None, str | None, list[str]]:
         stdout = self.exec(input)
         lines = stdout.split("\n")[:-1]
 
