@@ -42,7 +42,7 @@ aoc commands are:
         getattr(self, args.command)(sys.argv[2:])
 
     @staticmethod
-    def run(argv):
+    def run(argv: list[str]) -> None:
         parser = argparse.ArgumentParser(prog="aoc run", description="Runs submissions")
         parser.add_argument("-d", "--day", help="problem day", action="append")
         parser.add_argument("-p", "--part", help="problem part", action="append")
@@ -119,7 +119,7 @@ aoc commands are:
         )
 
     @staticmethod
-    def create(argv):
+    def create(argv: list[str]) -> None:
         parser = argparse.ArgumentParser(
             prog="aoc create", description="Create a new submission"
         )
@@ -141,14 +141,14 @@ aoc commands are:
         create(args.day, args.part, args.author, args.language)
 
     @staticmethod
-    def config(argv):
+    def config(argv: list[str]) -> None:
         parser = argparse.ArgumentParser(
             prog="aoc config", description="Configures user parameters"
         )
-        parser.add_argument("username", help="prefered username", type=str)
+        parser.add_argument("username", help="preferred username", type=str)
         parser.add_argument(
             "language",
-            help="prefered programming language",
+            help="preferred programming language",
             type=str,
             choices=SUPPORTED_LANGUAGES,
         )
