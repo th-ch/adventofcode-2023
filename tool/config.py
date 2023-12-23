@@ -14,7 +14,7 @@ _CONFIG_SECTION = "preferences"
 
 class Config(object):
     @staticmethod
-    def load() -> Config:
+    def load() -> "Config":
         config = configparser.ConfigParser()
         config[_CONFIG_SECTION] = {"username": "", "language": "py"}
         config.read(_CONFIG_FILE)
