@@ -93,7 +93,10 @@
 					{% for item in part %}
 					<div>
 						<div>
-							{{ item.submission.author }}
+							<a href='https://github.com/th-ch/adventofcode-2023/tree/main/day-{{ "%02d" |
+							format(item.submission.problem.day) }}/part-{{ item.submission.problem.part }}/{{
+							item.submission.author }}.{{ item.submission.language }}'>{{ item.submission.author
+							}}</a>
 						</div>
 						<div>
 							{{ item.submission.language }}
