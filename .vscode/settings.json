@@ -1,4 +1,3 @@
 {
-  "deno.enable": true,
-  "cSpell.words": ["Deno", "intcode", "Intcode"]
+  "deno.enable": true
 }
