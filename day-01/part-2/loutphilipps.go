@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"regexp"
 	"strings"
 	"time"
 
@@ -12,34 +11,18 @@ import (
 	"unicode"
 )
 
-func digitNameToInt(s string) int {
-	switch s {
-	case "one":
-		return 1
-	case "two":
-		return 2
-	case "three":
-		return 3
-	case "four":
-		return 4
-	case "five":
-		return 5
-	case "six":
-		return 6
-	case "seven":
-		return 7
-	case "eight":
-		return 8
-	case "nine":
-		return 9
-	default:
-		fmt.Println(fmt.Errorf("string %s is not a valid number", s))
-		return -1
-	}
-}
-
 func getCalibration(line string) int {
-	re := regexp.MustCompile(".*(one|two|three|four|five|six|seven|eight|nine).*")
+	nameToInt := map[string]int{
+		"one":   1,
+		"two":   2,
+		"three": 3,
+		"four":  4,
+		"five":  5,
+		"six":   6,
+		"seven": 7,
+		"eight": 8,
+		"nine":  9,
+	}
 
 	candidate := ""
 	firstDigit := -1
@@ -53,15 +36,13 @@ func getCalibration(line string) int {
 			lastDigit = int(char - '0')
 		} else if unicode.IsLetter(char) {
 			candidate += string(char)
-			matches := re.FindAllStringSubmatch(candidate, -1)
-			if len(matches) > 0 {
-				digit := digitNameToInt(matches[len(matches)-1][len(matches[len(matches)-1])-1])
-				if firstDigit == -1 {
-					firstDigit = digit
+			for name, value := range nameToInt {
+				if strings.HasSuffix(candidate, name) {
+					if firstDigit == -1 {
+						firstDigit = value
+					}
+					lastDigit = value
 				}
-				lastDigit = digit
-			} else if len(matches) > 2 {
-				fmt.Println("More than one digit name found, this is unexpected")
 			}
 		}
 	}
