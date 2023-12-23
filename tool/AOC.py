@@ -102,6 +102,7 @@ aoc commands are:
         )
 
         args = parser.parse_args(argv)
+        print(args.day)
 
         run(
             to_ints(args.day),

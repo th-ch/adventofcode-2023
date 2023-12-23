@@ -3,16 +3,18 @@
 import sys
 import time
 from collections import defaultdict
+from typing import Mapping
 
 from tabulate import tabulate
 
 import tool.discovery as discovery
 from tool.config import CONFIG
 from tool.distribution import get_time_distribution
-from tool.model import Result, Submission
+from tool.model import Input, Problem, Result, Submission
 from tool.runners.wrapper import SubmissionWrapper
 from tool.utils import BColor
 from tool.leaderboard.leaderboard import generate_leaderboard
+
 
 class DifferentAnswersException(Exception):
     pass
@@ -23,22 +25,22 @@ class UnexpectedDebugLinesException(Exception):
 
 
 def run(
-    days,
-    parts,
-    authors,
-    ignored_authors,
-    languages,
-    force,
-    no_debug,
-    all_days_parts,
-    restricted,
-    expand,
-    print_time_dist,
-):
+    days: list[int] | None,
+    parts: list[int] | None,
+    authors: list[str] | None,
+    ignored_authors: list[str] | None,
+    languages: list[str] | None,
+    force: bool,
+    no_debug: bool,
+    all_days_parts: bool,
+    restricted: bool,
+    expand: bool,
+    print_time_dist: bool,
+) -> None:
     problems = discovery.get_problems(days, parts, all_days_parts)
-    printed_day_header = set()
-    errors = []
-    all_results = []
+    printed_day_header: set[int] = set()
+    errors: list[str] = []
+    all_results: list[list[Result]] = []
 
     for problem in problems:
         if problem.day not in printed_day_header:
@@ -51,8 +53,8 @@ def run(
         )
         inputs = discovery.get_inputs(problem)
 
-        results_by_author = defaultdict(list)
-        results_by_input = defaultdict(list)
+        results_by_author: defaultdict[str, list[Result]] = defaultdict(list)
+        results_by_input: defaultdict[str, list[Result]] = defaultdict(list)
 
         for input in inputs:
             previous = None
@@ -67,22 +69,28 @@ def run(
                     results_by_author[submission.author].append(result)
                     results_by_input[input.author].append(result)
                     previous = result
-                except DifferentAnswersException as e:
-                    errors.append("{}ERROR: {}{}".format(BColor.RED, e, BColor.ENDC))
-                except UnexpectedDebugLinesException as e:
-                    errors.append("{}ERROR: {}{}".format(BColor.RED, e, BColor.ENDC))
+                except (DifferentAnswersException, UnexpectedDebugLinesException) as e:
+                    errors.append(
+                        f"{BColor.RED}ERROR: {e}{BColor.ENDC}".format(
+                            BColor.RED, e, BColor.ENDC
+                        )
+                    )
 
         for submission in submissions:
-            submission.runnable.cleanup()
-        if problem.parser():
-            problem.parser().cleanup()
+            if submission.runnable is not None:
+                submission.runnable.cleanup()
+        parser = problem.parser()
+        if parser is not None:
+            parser.cleanup()
 
         if restricted:
-            print_restrict_results(problem, results_by_author)
+            print_restrict_results(results_by_author)
         elif expand:
-            print_expanded_results(problem, results_by_input)
+            print_expanded_results(results_by_input)
         else:
-            results = get_aggregated_results(problem, results_by_author, print_time_dist)
+            results = get_aggregated_results(
+                problem, results_by_author, print_time_dist
+            )
             print_aggregated_header()
             print_results(results, print_time_dist)
             all_results.append(results)
@@ -93,11 +101,18 @@ def run(
         exit(1)
 
     if len(all_results) > 0 and all_days_parts:
-        generate_leaderboard(all_results)
+        generate_leaderboard(results=all_results)
 
 
-def run_submission(problem, submission, input, previous, no_debug):
+def run_submission(
+    problem: Problem,
+    submission: Submission,
+    input: Input,
+    previous: Result | None,
+    no_debug: bool,
+):
     start = time.perf_counter()
+    assert submission.runnable is not None
     output = submission.runnable.run(input.content)
     end = time.perf_counter()
     msecs = (end - start) * 1000
@@ -120,27 +135,21 @@ def run_submission(problem, submission, input, previous, no_debug):
     else:
         answer = str(output)
 
-    if problem.parser():
-        answer = problem.parser().parse(answer)
+    assert answer is not None
+    parser = problem.parser()
+    if parser is not None:
+        answer = parser.parse(answer)
     if previous is not None and answer != previous.answer:
         raise DifferentAnswersException(
-            """different answers day:{} part:{}
-input: {}
-{}: {}
-{}: {}""".format(
-                problem.day,
-                problem.part,
-                input.path(),
-                previous.submission.path(),
-                previous.answer,
-                submission.path(),
-                answer,
-            )
+            f"""different answers day:{problem.day} part:{problem.part}
+input: {input.path()}
+{previous.submission.path()}: {previous.answer}
+{submission.path()}: {answer}"""
         )
     return Result(problem, submission, input, answer, msecs)
 
 
-def print_results(results, print_time_dist=False):
+def print_results(results: list[Result], print_time_dist: bool = False) -> None:
     results.sort(key=lambda x: x.duration)
     print(
         tabulate(
@@ -194,7 +203,7 @@ def print_results(results, print_time_dist=False):
     )
 
 
-def print_expanded_results(problem, results_by_input):
+def print_expanded_results(results_by_input: Mapping[str, list[Result]]) -> None:
     for input_author, submission_results in results_by_input.items():
         print("---------------------------------------------------")
         print(
@@ -203,34 +212,37 @@ def print_expanded_results(problem, results_by_input):
             )
         )
         print("---------------------------------------------------")
-        results = []
-        for result in submission_results:
-            results.append(result)
-        print_results(results)
+        print_results(submission_results)
 
 
-def print_restrict_results(problem, results_by_author):
+def print_restrict_results(results_by_author: Mapping[str, list[Result]]) -> None:
     print("---------------------------------------------------")
     print("On own inputs")
     print("---------------------------------------------------")
-    results = []
-    for author, results_by_input in results_by_author.items():
+    results: list[Result] = []
+    for _, results_by_input in results_by_author.items():
         for result in results_by_input:
             results.append(result)
     print_results(results)
+
 
 def print_aggregated_header():
     print("---------------------------------------------------")
     print("Avg over all inputs")
     print("---------------------------------------------------")
 
-def get_aggregated_results(problem, results_by_author, print_time_dist=False):
-    results = []
+
+def get_aggregated_results(
+    problem: Problem,
+    results_by_author: Mapping[str, list[Result]],
+    print_time_dist: bool = False,
+) -> list[Result]:
+    results: list[Result] = []
     # Loop for all authors, get all the results they produced
     for author, results_by_input in results_by_author.items():
-        res_by_language = {}
-        count_by_language = defaultdict(int)
-        durations_by_language = defaultdict(list)
+        res_by_language: dict[str, Result] = {}
+        count_by_language: defaultdict[str, int] = defaultdict(int)
+        durations_by_language: defaultdict[str, list[float]] = defaultdict(list)
         # The results can be made by different languages. Make a virtual result (storing total duration) by language
         for result in results_by_input:
             result_language = result.submission.language
@@ -245,6 +257,7 @@ def get_aggregated_results(problem, results_by_author, print_time_dist=False):
                     0,
                 )
                 res_by_language[result_language] = res
+            assert result.input is not None
             # The author is on his own input, get his answer (split to allow author.x.lang on input author.txt)
             if author.split(".")[0] == result.input.author:
                 res_by_language[result_language].answer = result.answer
@@ -262,17 +275,12 @@ def get_aggregated_results(problem, results_by_author, print_time_dist=False):
     return results
 
 
-def print_day_header(problem):
-    print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+def print_day_header(problem: Problem) -> None:
+    print("~" * 50)
     print(
-        BColor.RED
-        + BColor.BOLD
-        + "Running submissions for day %02d:" % problem.day
-        + BColor.ENDC
+        f"{BColor.RED}{BColor.BOLD}Running submissions for day {problem.day:02d}:{BColor.ENDC}"
     )
 
 
-def print_part_header(problem):
-    print(
-        "\n" + BColor.MAGENTA + BColor.BOLD + "* part %d:" % problem.part + BColor.ENDC
-    )
+def print_part_header(problem: Problem):
+    print(f"\n{BColor.MAGENTA}{BColor.BOLD}* part {problem.part}:{BColor.ENDC}")

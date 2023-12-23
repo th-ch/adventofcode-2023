@@ -1,13 +1,16 @@
 import collections
+from typing import Iterable
+
+from tool.runners.python import SubmissionPy
 
 
-class SubmissionIntcode:
-    def __init__(self, file):
+class SubmissionIntcode(SubmissionPy):
+    def __init__(self, file: str) -> None:
         with open(file, "r") as f:
             code_str = f.read()
         self.code = [int(v) for v in code_str.strip().split(",")]
 
-    def run(self, input):
+    def run(self, input: str) -> str:
         inputs = [int(v) for v in input.strip().split()]
         out = compute(self.code, [len(inputs)] + inputs)
         return ",".join(str(v) for v in out)
@@ -16,12 +19,12 @@ class SubmissionIntcode:
         pass
 
 
-def compute(code, inputs):
+def compute(code: list[int], inputs: list[int]) -> Iterable[int]:
     p = collections.defaultdict(int, enumerate(code))
     pc = 0
     relative_base = 0
 
-    def index(pos):
+    def index(pos: int) -> int:
         mode = (p[pc] // 10 ** (1 + pos)) % 10
         if mode == 0:
             return p[pc + pos]

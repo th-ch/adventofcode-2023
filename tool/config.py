@@ -14,7 +14,7 @@ _CONFIG_SECTION = "preferences"
 
 class Config(object):
     @staticmethod
-    def load():
+    def load() -> "Config":
         config = configparser.ConfigParser()
         config[_CONFIG_SECTION] = {"username": "", "language": "py"}
         config.read(_CONFIG_FILE)
@@ -22,11 +22,11 @@ class Config(object):
             config[_CONFIG_SECTION]["username"], config[_CONFIG_SECTION]["language"]
         )
 
-    def __init__(self, user, language):
+    def __init__(self, user: str, language: str) -> None:
         self.user = user
         self.language = language
 
-    def save(self):
+    def save(self) -> None:
         config = configparser.ConfigParser()
         config[_CONFIG_SECTION] = {"username": self.user, "language": self.language}
         mkdirp(_CONFIG_PATH)
@@ -37,7 +37,7 @@ class Config(object):
 CONFIG = Config.load()
 
 
-def config(username, language):
+def config(username: str, language: str) -> None:
     global CONFIG
     if not username:
         username = CONFIG.user
