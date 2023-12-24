@@ -7,16 +7,17 @@ from tool.runners.wrapper import SubmissionWrapper
 
 
 class SubmissionCpp(SubmissionWrapper):
-    def __init__(self, file):
+    def __init__(self, file: str) -> None:
         SubmissionWrapper.__init__(self)
         tmp = tempfile.NamedTemporaryFile(prefix="aoc")
         tmp.close()
         compile_output = subprocess.check_output(
             [
-                "g++",
+                "clang",
                 "-Wall",
-                "-Wno-sign-compare",
+                "-Wextra",
                 "-O3",
+                "-lstdc++",
                 "-std=c++20",
                 "-o",
                 tmp.name,
@@ -27,13 +28,13 @@ class SubmissionCpp(SubmissionWrapper):
             raise CompilationError(compile_output)
         self.executable = tmp.name
 
-    def exec(self, input):
+    def exec(self, input: str) -> str:
         try:
             return subprocess.check_output([self.executable, input]).decode()
         except OSError as e:
             if e.errno == errno.ENOENT:
                 # executable not found
-                return CompilationError(e)
+                raise CompilationError(e)
             else:
                 # subprocess exited with another error
-                return RuntimeError(e)
+                raise RuntimeError(e)
