@@ -18,7 +18,7 @@ class SubmissionCpp(SubmissionWrapper):
                 "-Wextra",
                 "-O3",
                 "-lstdc++",
-                "-std=c++20",
+                "-std=c++2b",
                 "-o",
                 tmp.name,
                 file,
