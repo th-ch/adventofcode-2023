@@ -2,6 +2,7 @@
 #include <cstddef>
 #include <iostream>
 #include <optional>
+#include <ostream>
 #include <span>
 #include <sstream>
 #include <stdexcept>
@@ -29,6 +30,14 @@ __int128_t gcd(__int128_t a, __int128_t b) {
   return b;
 }
 
+std::ostream& operator<<(std::ostream& o, const __int128& x) {
+  if (x == std::numeric_limits<__int128>::min())
+    return o << "-170141183460469231731687303715884105728";
+  if (x < 0) return o << "-" << -x;
+  if (x < 10) return o << (char)(x + '0');
+  return o << x / 10 << (char)(x % 10 + '0');
+}
+
 struct Vec {
   __int128_t x;
   __int128_t y;
@@ -45,6 +54,10 @@ struct Vec {
   Vec operator^(const Vec& o) const {
     return {y * o.z - z * o.y, z * o.x - x * o.z, x * o.y - y * o.x};
   }
+
+  friend std::ostream& operator<<(std::ostream& out, const Vec& v) {
+    return out << "(" << v.x << "," << v.y << "," << v.z << ")";
+  }
 };
 
 struct Hail {
@@ -57,8 +70,8 @@ std::optional<std::pair<__int128_t, __int128_t>> solve(
     __int128_t b1, __int128_t b2) {
   __int128_t delta = x11 * x22 - x21 * x12;
   if (delta == 0) return std::nullopt;
-  return std::make_pair(x22 * b1 / delta - x12 * b2 / delta,
-                        -x21 * b1 / delta + x11 * b2 / delta);
+  return std::make_pair((x22 * b1 - x12 * b2) / delta,
+                        -(x21 * b1 + x11 * b2) / delta);
 }
 
 static std::array<Hail, kNHails> kHails;
