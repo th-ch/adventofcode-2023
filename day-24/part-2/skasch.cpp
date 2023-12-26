@@ -52,13 +52,11 @@ struct Hail {
   Vec v;
 };
 
-std::optional<std::pair<__int128_t, __int128_t>> solve(
-    __int128_t x11, __int128_t x12, __int128_t x21, __int128_t x22,
-    __int128_t b1, __int128_t b2) {
+std::optional<__int128_t> solve(__int128_t x11, __int128_t x12, __int128_t x21,
+                                __int128_t x22, __int128_t b1, __int128_t b2) {
   __int128_t delta = x11 * x22 - x21 * x12;
   if (delta == 0) return std::nullopt;
-  return std::make_pair(x22 * b1 / delta - x12 * b2 / delta,
-                        -x21 * b1 / delta + x11 * b2 / delta);
+  return (x22 * b1 - x12 * b2) / delta;
 }
 
 static std::array<Hail, kNHails> kHails;
@@ -156,7 +154,7 @@ std::string Run(const std::string& input) {
       auto solution = solve(v1.x - vx, -v2.x + vx, v1.y - vy, -v2.y + vy,
                             p2.x - p1.x, p2.y - p1.y);
       if (!solution.has_value()) continue;
-      const auto& [t1, t2] = *solution;
+      __int128 t1 = *solution;
       for (int vz = -kMaxVelocity; vz < kMaxVelocity; ++vz) {
         if (invalid_vz.contains(vz)) continue;
         Vec v(vx, vy, vz);
