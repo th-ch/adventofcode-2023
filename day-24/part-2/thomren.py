@@ -38,7 +38,7 @@ class ThomrenSubmission(SubmissionPy):
         )
 
         x = np.linalg.solve(A, b)
-        return int(np.sum(x[:3]))
+        return x[:3].round().astype(int).sum()
 
 
 @dataclass
