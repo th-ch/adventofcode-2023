@@ -84,7 +84,6 @@ def build_leaderboard_data(results: list[list[Result]]) -> LeaderboardData:
     res = LeaderboardData(
         results_by_day_and_part, aggregate_author_results(results_by_day_and_part)
     )
-    print(res)
     return res
 
 
