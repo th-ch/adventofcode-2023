@@ -9,37 +9,23 @@
 #include <unordered_map>
 #include <unordered_set>
 
-static constexpr std::int64_t kMaxVelocity = 1024;
+static constexpr std::int64_t kMaxVelocity = 512;
 static constexpr int kNHails = 300;
 static std::unordered_map<int, std::vector<int>> kIndexesByVx;
 static std::unordered_map<int, std::vector<int>> kIndexesByVy;
 static std::unordered_map<int, std::vector<int>> kIndexesByVz;
 
-__int128_t gcd(__int128_t a, __int128_t b) {
-  if (b < 0) b = -b;
-  if (a < 0) a = -a;
-  if (a < b) std::swap(a, b);
-  if (b == 0) return a;
-  __int128_t r;
-  while (a % b > 0) {
-    r = a % b;
-    a = b;
-    b = r;
-  }
-  return b;
-}
-
 struct Vec {
-  __int128_t x;
-  __int128_t y;
-  __int128_t z;
+  std::int64_t x;
+  std::int64_t y;
+  std::int64_t z;
 
   Vec operator+(const Vec& o) const { return {x + o.x, y + o.y, z + o.z}; }
   Vec operator-() const { return {-x, -y, -z}; }
   Vec operator-(const Vec& o) const { return *this + (-o); }
-  Vec operator*(__int128_t k) const { return {k * x, k * y, k * z}; }
-  friend Vec operator*(__int128_t k, const Vec& v) { return v * k; }
-  __int128_t operator*(const Vec& o) const {
+  Vec operator*(std::int64_t k) const { return {k * x, k * y, k * z}; }
+  friend Vec operator*(std::int64_t k, const Vec& v) { return v * k; }
+  std::int64_t operator*(const Vec& o) const {
     return x * o.x + y * o.y + z * o.z;
   }
   Vec operator^(const Vec& o) const {
@@ -52,9 +38,10 @@ struct Hail {
   Vec v;
 };
 
-std::optional<__int128_t> solve(__int128_t x11, __int128_t x12, __int128_t x21,
-                                __int128_t x22, __int128_t b1, __int128_t b2) {
-  __int128_t delta = x11 * x22 - x21 * x12;
+std::optional<std::int64_t> solve(std::int64_t x11, std::int64_t x12,
+                                  std::int64_t x21, std::int64_t x22,
+                                  std::int64_t b1, std::int64_t b2) {
+  std::int64_t delta = x11 * x22 - x21 * x12;
   if (delta == 0) return std::nullopt;
   return (x22 * b1 - x12 * b2) / delta;
 }
