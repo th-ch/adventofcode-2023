@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 import numpy as np
+from sympy import Matrix
 from tool.runners.python import SubmissionPy
 
 
@@ -23,8 +24,8 @@ class ThomrenSubmission(SubmissionPy):
         # (v_0 - v_1) x p + (p_1 - p_0) x v = p_1 x v_1 - p_0 x v_0
         # (v_1 - v_2) x p + (p_2 - p_1) x v = p_2 x v_2 - p_1 x v_1
 
-        A = np.zeros((6, 6))
-        b = np.zeros(6)
+        A = np.zeros((6, 6), dtype=int)
+        b = np.zeros(6, dtype=int)
         # using u x v = Uv where U = I x u
         A[:3, :3] = np.cross(np.eye(3), hailstones[0].v - hailstones[1].v)
         A[:3, 3:] = np.cross(np.eye(3), hailstones[1].p - hailstones[0].p)
@@ -37,8 +38,8 @@ class ThomrenSubmission(SubmissionPy):
             hailstones[1].p, hailstones[1].v
         )
 
-        x = np.linalg.solve(A, b)
-        return x[:3].round().astype(int).sum()
+        x = Matrix(A).solve(Matrix(b))
+        return sum(x[:3])
 
 
 @dataclass
