@@ -1,6 +1,6 @@
 from tool.runners.python import SubmissionPy
 
-import numpy as np
+from sympy import Matrix
 
 
 class ThChSubmission(SubmissionPy):
@@ -56,7 +56,7 @@ class ThChSubmission(SubmissionPy):
         (p2_x, p2_y, p2_z), (v2_x, v2_y, v2_z) = paths[1]
         (p3_x, p3_y, p3_z), (v3_x, v3_y, v3_z) = paths[2]
 
-        A = np.array([
+        A = Matrix([
             # Hailstones 1 and 2
             [v1_y - v2_y, v2_x - v1_x, 0, p2_y - p1_y, p1_x - p2_x, 0],
             [v1_z - v2_z, 0, v2_x - v1_x, p2_z - p1_z, 0, p1_x - p2_x],
@@ -66,7 +66,7 @@ class ThChSubmission(SubmissionPy):
             [v2_z - v3_z, 0, v3_x - v2_x, p3_z - p2_z, 0, p2_x - p3_x],
             [0, v2_z - v3_z, v3_y - v2_y, 0, p3_z - p2_z, p2_y - p3_y],
         ])
-        b = np.array([
+        b = Matrix([
             # Hailstones 1 and 2
             p1_x * v1_y - p1_y * v1_x - p2_x * v2_y + p2_y * v2_x,
             p1_x * v1_z - p1_z * v1_x - p2_x * v2_z + p2_z * v2_x,
@@ -77,9 +77,9 @@ class ThChSubmission(SubmissionPy):
             p2_y * v2_z - p2_z * v2_y - p3_y * v3_z + p3_z * v3_y,
         ])
 
-        x = np.linalg.solve(A, b)
+        x = A.solve(b)
         # Keep only the first 3 values (pr_x, pr_y, pr_z) and sum them
-        return x[:3].astype(int).sum()
+        return sum(x[:3])
 
 
 def test_th_ch():
