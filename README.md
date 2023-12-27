@@ -12,25 +12,30 @@ These are proposed solutions for the [Advent of Code 2023](http://adventofcode.c
 
 The solutions are automatically tested with github-actions.
 
+An automatically updated
+[leaderboard](https://cs-advent-of-code-2023.netlify.app/) summarizes the
+execution times of each entry submitted for each problem. It takes a few minutes
+to update once a new submission is merged.
+
 [![Build Status](https://github.com/th-ch/adventofcode-2023/workflows/CI/badge.svg)](https://github.com/th-ch/adventofcode-2023/actions?query=branch%3Amain)
 
-- [Usage](#usage)
-  - [Installation](#installation)
-  - [Examples](#examples)
-    - [Run last problem](#run-last-problem)
-    - [Run specific problems from specific users](#run-specific-problems-from-specific-users)
-- [Contribute](#contribute)
-  - [New submission with aoc](#new-submission-with-aoc)
-  - [New submission without aoc](#new-submission-without-aoc)
-- [Installing runners to try out other people code](#installing-runners-to-try-out-other-people-code)
-  - [Go](#go)
-  - [Rust](#rust)
-  - [Deno](#deno)
-  - [Nim](#nim)
-  - [PHP](#php)
-  - [C #](#c-)
-  - [Zig](#zig)
-- [History](#history)
+1. [Usage](#usage)
+  1. [Installation](#installation)
+  2. [Examples](#examples)
+    1. [Run last problem](#run-last-problem)
+    2. [Run specific problems from specific users](#run-specific-problems-from-specific-users)
+2. [Contribute](#contribute)
+  1. [New submission with aoc](#new-submission-with-aoc)
+  2. [New submission without aoc](#new-submission-without-aoc)
+3. [Installing runners to try out other people code](#installing-runners-to-try-out-other-people-code)
+  1. [Go](#go)
+  2. [Rust](#rust)
+  3. [Deno](#deno)
+  4. [Nim](#nim)
+  5. [PHP](#php)
+  6. [C #](#c-)
+  7. [Zig](#zig)
+4. [History](#history)
 
 ## Usage
 
