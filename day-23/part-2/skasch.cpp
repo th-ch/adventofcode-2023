@@ -1,6 +1,6 @@
+#include <bitset>
 #include <chrono>
 #include <cstddef>
-#include <deque>
 #include <iostream>
 #include <optional>
 #include <span>
@@ -24,7 +24,8 @@ static std::array<std::unordered_map<int, int>, kNNodes> kGraph;
 static std::array<int, kNNodes> kPos = {kStart, kEnd};
 static std::unordered_map<int, int> kIndex = {{kStart, 0}, {kEnd, 1}};
 static std::array<std::array<bool, 4>, kNNodes> kVisitedDirections;
-static std::array<bool, kNNodes> kVisited;
+static std::bitset<kNNodes> kVisited;
+static std::array<int, 2 * kNNodes> kActions;
 
 static int kCountNodes = 2;
 
@@ -100,34 +101,35 @@ void BuildGraph(const std::string& input) {
   }
 }
 
-int FindLongestPath(const std::string& input) {
-  std::vector<int> path;
-  std::size_t total_distance = 0;
-  std::deque<int> actions = {0};
-  std::size_t longest = 0;
-  while (!actions.empty()) {
-    int action = actions.front();
-    actions.pop_front();
-    if (action == -1) {
-      int prev_pos = path.back();
-      kVisited[prev_pos] = false;
-      path.pop_back();
-      total_distance -= kGraph[prev_pos][path.back()];
+int FindLongestPath() {
+  int total_distance = 0;
+  int idx = 0;
+  int longest = 0;
+  int pos = 0;
+  while (idx >= 0) {
+    int action = kActions[idx];
+    --idx;
+    if (action < 0) {
+      kVisited[pos] = false;
+      total_distance -= kGraph[pos][~action];
+      pos = ~action;
       continue;
     }
-    if (!path.empty()) {
-      total_distance += kGraph[path.back()][action];
+    if (pos != action) {
+      total_distance += kGraph[pos][action];
     }
     kVisited[action] = true;
-    path.push_back(action);
+    pos = action;
     if (action == 1) {
       longest = std::max(longest, total_distance);
       continue;
     }
     for (const auto& [next_pos, _] : kGraph[action]) {
       if (kVisited[next_pos]) continue;
-      actions.push_front(-1);
-      actions.push_front(next_pos);
+      ++idx;
+      kActions[idx] = ~pos;
+      ++idx;
+      kActions[idx] = next_pos;
     }
   }
   return longest;
@@ -136,7 +138,7 @@ int FindLongestPath(const std::string& input) {
 std::string Run(const std::string& input) {
   // Your code goes here
   BuildGraph(input);
-  return std::to_string(FindLongestPath(input));
+  return std::to_string(FindLongestPath());
 }
 
 int main(int argc, char* argv[]) {
