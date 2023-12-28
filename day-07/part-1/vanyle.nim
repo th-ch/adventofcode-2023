@@ -4,12 +4,30 @@ from os import paramStr
 import ../../lib/nim/vanyle/speed_utils
 import algorithm
 
-const order = ['A', 'K', 'Q', 'J', 'T', '9', '8', '7', '6', '5', '4', '3', '2']
+proc parseInput(s: string): seq[(array[5, char], int16, int16)] = 
+    result = newSeqOfCap[(array[5, char], int16, int16)](1000)
+    var t = Tokenizer(s:s,offset:0)
+    var lineIdx = 0.int16
+
+    while t.offset < s.len:
+        var a: array[5, char]
+        for i in 0..<5:
+            a[i] = t.s[t.offset]
+            t.advanceFixed(1)
+        
+        t.advanceFixed(1)
+        var i = t.eatUnsignedInt().int16
+        result.add((a, i, lineIdx))
+        inc lineIdx
+
+        t.advanceFixed(1)
+
+const order = ['2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K', 'A']
 
 const rorder: array[256, int8] = static:
     var res: array[256, int8]
     for i in 0..<order.len:
-        res[cast[int](order[i])] = cast[int8](i+1)
+        res[cast[int](order[i])] = cast[int8](i)
     res
 
 proc fmap(c: char): int =
@@ -22,11 +40,17 @@ proc fmap(c: char): int =
     if c == 'J': return 14 - 2
     return toDigit(c) - 2
 
-proc profileKind(a: array[5, char]): int8 =
-    # Return the win profile of the hand:
-    # 5 => 6 , 4 => 5
-    # 3,2 => 4, 3 => 3
-    # 2,2 => 2 (2 pairs), 2 => 1 (1 pair), 1 => 0 (high card)
+type HandTypes = enum
+    HighCard = 0,
+    APair = 1,
+    TwoPairs = 2,
+    ThreeOfKind = 3,
+    FullHouse = 4,
+    FourOfKind = 5,
+    FiveOfKind = 6
+
+proc profileKind(a: array[5, char]): HandTypes =
+    # Return the win profile of the hand
 
     var ct: array[13, int8]
     for i in 0..<a.len:
@@ -36,60 +60,45 @@ proc profileKind(a: array[5, char]): int8 =
     var isTwo = false
     for i in 0..<ct.len:
         if ct[i] == 5:
-            return 6
+            return FiveOfKind
         elif ct[i] == 4:
-            return 5
+            return FourOfKind
         elif ct[i] == 3:
-            if isTwo: return 4 # 3,2
+            if isTwo: return FullHouse # 3,2
             isThree = true 
         elif ct[i] == 2:
-            if isThree: return 4 # 3,2
-            if isTwo: return 2 # two pairs
+            if isThree: return FullHouse # 3,2
+            if isTwo: return TwoPairs # two pairs
             isTwo = true 
 
-    if isThree: return 3
-    if isTwo: return 1
-    return 0
+    if isThree: return ThreeOfKind
+    if isTwo: return APair
+    return HighCard
 
-proc isHighestCardStronger1(a, b: array[5, char]): int =
+proc highCardValue(a: array[5, char]): int32 =
+    # Represent the value of the highest card as an int for fast cmp.
+    # Return a value between 0 and 13^5 - 1
     for i in 0..<a.len:
-        var vA = rorder[cast[int](a[i])]
-        var vB = rorder[cast[int](b[i])]
-        if vA < vB:
-            return 1
-        elif vB < vA:
-            return -1
+        result *= order.len
+        result += rorder[cast[int](a[i])]
+    # max value: 13^5 = 371293
 
-proc parseInput(s: string): seq[(array[5, char], int16)] = 
-    result = newSeqOfCap[(array[5, char], int16)](1000)
-    var t = Tokenizer(s:s,offset:0)
-
-    while t.offset < s.len:
-        var a: array[5, char]
-        for i in 0..<5:
-            a[i] = t.s[t.offset]
-            t.advanceFixed(1)
-        
-        t.advanceFixed(1)
-        var i = t.eatUnsignedInt().int16
-        result.add((a, i))
-
-        t.advanceFixed(1)
 
 proc run(s: string): string =
     var r = parseInput(s)
 
-    proc myCmp(a,b: (array[5, char], int16)): int =
-        let pa = profileKind(a[0])
-        let pb = profileKind(b[0])
+    var valueCache = newSeqOfCap[int32](r.len)
 
-        if pa == pb:
-            return isHighestCardStronger1(a[0] ,b[0])
-        else:
-            if pa > pb:
-                return 1
-            else:
-                return -1
+    for i in r:
+        let pa = profileKind(i[0]).int32 * 371293 # 13 ^ 5  
+        let vh = highCardValue(i[0]).int32
+        valueCache.add(pa + vh)
+
+
+    proc myCmp(a,b: (array[5, char], int16, int16)): int =
+        if valueCache[a[2]] > valueCache[b[2]]:
+            return 1
+        return -1
 
     r.sort(myCmp)
 
