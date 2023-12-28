@@ -1,48 +1,53 @@
 from times import cpuTime
 from os import paramStr
 
-import strutils
+import ../../lib/nim/vanyle/speed_utils
 
-# red = 0, green = 1, blue = 2
-var maxCubes = [12,13,14]
+const maxCubes = [12,13,14]
 
-proc parseInput(s: string): seq[seq[array[3, int]]] = 
-    var l = s.split("\n")
-
-    for line in l:
-        var game = line.split(": ")[1]
-        var draws = game.split("; ")
-        var cgame: seq[array[3,int]]
-        for d in draws:
-            var cc = d.strip.split(", ")
-            var tt: array[3,int] = [0,0,0]
-            for el in cc:
-                var pair = el.split(" ",2)
-                if pair[1][0] == 'r': tt[0] = parseInt(pair[0])
-                if pair[1][0] == 'g': tt[1] = parseInt(pair[0])
-                if pair[1][0] == 'b': tt[2] = parseInt(pair[0])
-            cgame.add(tt)
-        result.add cgame
-
+proc cToI(c: char): int =
+    if c == 'r': return 0
+    if c == 'g': return 1
+    if c == 'b': return 2
 
 proc run(s: string): string =
-    var r = parseInput(s)
-
+    var t: Tokenizer = Tokenizer(s: s, offset: 0)
     var validIds = 0
-    for i in 0..<r.len:
-        var game = r[i]
+    var lineIdx = 1
+
+    while not t.atEnd():
+        var eol = t.findNext('\n')
         var isGameValid = true
-        for draws in game:
-            var isDrawValid = true
-            for color, count in draws:
-                if maxCubes[color] < count:
-                    isDrawValid = false
-                    break
-            if not isDrawValid:
-                isGameValid = false
-                break
+
+        # Game 1: 19 blue, 12 red; 19 blue, 2 green, 1 red; 13 red, 11 blue
+        t.advance(':', eol)
+        t.advanceFixed(2) # eat ' :'
+
+        block lineParse:
+            while t.offset < eol:
+                var eob = t.findNext(';', eol)
+
+                while t.offset < eob:
+                    let count = t.eatUnsignedInt()
+                    t.advanceFixed(1) # eat space.
+                    let color = t.s[t.offset] # store r,g or b.
+                    let cIdx = cToI(color)
+
+                    # Process game:
+                    if maxCubes[cIdx] < count:
+                        isGameValid = false
+                        t.offset = eol
+                        break lineParse
+
+                    t.advance(',', eob)
+                    t.advanceFixed(2) # skip the comma and space
+
+        t.advanceFixed(1) # skip end of line
+
         if isGameValid:
-            validIds += (i+1)
+            validIds += lineIdx
+
+        inc lineIdx
 
     return $validIds
 
