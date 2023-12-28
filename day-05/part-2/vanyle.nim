@@ -1,28 +1,39 @@
 from times import cpuTime
 from os import paramStr
 
-import sequtils, strutils, sugar
+import ../../lib/nim/vanyle/speed_utils
 
-proc parseInput(s: string): (seq[int], seq[seq[(int,int,int)]]) = 
-    let l = s.strip.split("\n\n")
+proc parseInput(s: string): (seq[int], array[7, seq[(int,int,int)]]) =
+    var t: Tokenizer = Tokenizer(s:s,offset:0)
+    t.advance('\n')
 
-    let seeds = l[0].split(": ")[1].split(" ").map(x => x.strip.parseInt)
-    let rest = l[1..<l.len]
-    
-    
-    let rest2 = rest.map(x => x.split(":\n")[1])
+    let seeds = ints(s.toOpenArray(0, t.offset-1))
+    var maps: array[7, seq[(int,int,int)]]
+    var i = 0
 
-    var maps: seq[seq[(int,int,int)]] = @[]
+    t.advanceFixed(2)
 
-    for amap in rest2:
-        let triplets = amap.split("\n")
-        var ll: seq[(int,int,int)] = @[]
-        for t in triplets:
-            let tIntegers = t.split(" ").map(x => x.strip.parseInt)
+    while t.offset < s.len:
+        # Ignore the first line:
+        t.advance('\n')
+        t.advanceFixed(1)
+        var nextGroup = t.findNext("\n\n", s.len)
+
+        var ll: seq[(int,int,int)] = newSeqOfCap[(int, int, int)](40)
+
+        while t.offset < nextGroup:
+            var p = t.offset
+            t.advance('\n', s.len)
+            let tIntegers = ints(s.toOpenArray(p, t.offset-1))
             ll.add(
                 (tIntegers[0], tIntegers[1], tIntegers[2])
             )
-        maps.add(ll)
+            t.advanceFixed(1)
+
+        maps[i] = ll
+        inc i
+
+        t.offset = nextGroup + 2
 
     return (seeds, maps)
 
