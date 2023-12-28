@@ -56,6 +56,12 @@ def aggregate_author_results(
     )
     for results_by_part in results_by_day_and_part:
         for results in results_by_part:
+            # Ignore day 25 part 2, which is given if all 49 other problems were
+            # solved
+            if not results or (
+                results[0].problem.day == 25 and results[0].problem.part == 2
+            ):
+                continue
             best_result_by_author: dict[str, Result] = {}
             for result in results:
                 author = result.submission.author
@@ -71,7 +77,10 @@ def aggregate_author_results(
     return sorted(
         (
             AggregatedAuthorResult(
-                author, sorted(c.languages), c.stars, c.total_execution_time
+                author,
+                sorted(c.languages),
+                50 if c.stars == 49 else c.stars,
+                c.total_execution_time,
             )
             for author, c in results_by_author.items()
         ),
