@@ -1,7 +1,7 @@
 # Utility functions for Nim
 # Mainly used to quickly parse strings without having to do copies.
 
-iterator fastSplit*(s: openarray[char], c: char): auto {.closure.} =
+iterator fastSplit*(s: openarray[char], c: char): auto =
     var i = 0
     var prev = 0
     while i < s.len:
