@@ -18,15 +18,20 @@ const fchar = {'o','t','f','s','e','n'}
 proc parseVal(s: string, i: int): int =
     if isDig s[i]: return cast[int](s[i]) - cast[int]('0')
     if s[i] notin fchar: return -1
-    if scmp(s, "one", i): return 1
-    if scmp(s, "two", i): return 2
-    if scmp(s, "three", i): return 3
-    if scmp(s, "four", i): return 4
-    if scmp(s, "five", i): return 5
-    if scmp(s, "six", i): return 6
-    if scmp(s, "seven", i): return 7
-    if scmp(s, "eight", i): return 8
-    if scmp(s, "nine", i): return 9
+    if s[i] == 't':
+        if scmp(s, "hree", i+1): return 3
+        if scmp(s, "wo", i+1): return 2
+    elif s[i] == 'f':
+        if scmp(s, "our", i+1): return 4
+        if scmp(s, "ive", i+1): return 5
+    elif s[i] == 's':
+        if scmp(s, "ix", i+1): return 6
+        if scmp(s, "even", i+1): return 7
+    else:
+        if scmp(s, "one", i): return 1
+        elif scmp(s, "eight", i): return 8
+        elif scmp(s, "nine", i): return 9
+
     return -1
 
 # Simd magic!
