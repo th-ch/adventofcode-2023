@@ -25,13 +25,28 @@ type Tokenizer* = object
     s*: string
     offset*: int
 
-proc advance*(t: var Tokenizer, c: char, until: int = int.high) {.inline.} =
+proc isEqual*(a: openarray[char], b: static[string]): bool {.inline.} =
+    # Don't check for length as b is static, so we can assume that a was correctly sliced.
+    for i in 0..<b.len: # notice we use b here as b is know at compile time so the loop can be unrolled.
+        if a[i] != b[i]: return false
+    return true
+
+proc advance*(t: var Tokenizer, c: char, until: int = int.high) =
     while t.offset < until and t.s[t.offset] != c:
         inc t.offset
 
-proc findNext*(t: Tokenizer, c: char, until: int = int.high): int {.inline.} =
+proc advance*(t: var Tokenizer, s: static[string], until: int = int.high) =
+    while t.offset < until and not isEqual(t.s.toOpenArray(t.offset, t.offset+s.len-1), s):
+        inc t.offset
+
+proc findNext*(t: Tokenizer, c: char, until: int = int.high): int =
     result = t.offset
     while result < until and result < t.s.len and t.s[result] != c:
+        inc result
+
+proc findNext*(t: Tokenizer, s: static[string], until: int = int.high): int =
+    result = t.offset
+    while result < until and result < (t.s.len - s.len + 1) and not isEqual(t.s.toOpenArray(result, result+s.len-1), s):
         inc result
 
 proc advanceFixed*(t: var Tokenizer, i: int) {.inline.} =
