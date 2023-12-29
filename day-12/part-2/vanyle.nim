@@ -15,47 +15,37 @@ func parseInput(s: string): seq[(string, seq[uint8])] =
 
 
 var hints: seq[uint8]
-var memoTable: Table[(string, int16, uint8, uint8), int]
-proc possibilities(pattern: string, pslice: int16, hintSlice: uint8, counterSeq: uint8): int =
-    # Recursion, my boy!!
-    if (pattern, pslice, hintSlice, counterSeq) in memoTable:
-        return memoTable[(pattern, pslice, hintSlice, counterSeq)]
-
-    if pslice == -1:  
-        if hintSlice > 1:
-            return 0
-        if hintSlice == 0 and counterSeq == 0:
-            return 1
-        if hintSlice == 1 and counterSeq == hints[0]:
-            return 1
+var memoTable: Table[(int16, uint8), int]
+proc possibilities(pattern: string, pslice: int16, hintSlice: uint8): int =
+    if hintSlice == 0:
+        for c in pattern.toOpenArray(0, pslice):
+            if c == '#': return 0
+        return 1
+    
+    if pslice == -1:
         return 0
+    
+    if (pslice, hintSlice) in memoTable:
+        return memoTable[(pslice, hintSlice)]
 
-    var brokenCounter = counterSeq
+    let hint = hints[hintSlice-1].int
+    var res = 0
 
-    for j in countdown(pslice, 0):
-        if pattern[j] == '#':
-            inc brokenCounter
-        elif pattern[j] == '.':
-            if brokenCounter == 0: continue
-            if hintSlice == 0: return 0
-            if hints[hintSlice-1] == brokenCounter: # ok!
-                var r = possibilities(pattern, j-1, hintSlice - 1, 0)
-                memoTable[(pattern, pslice, hintSlice, counterSeq)] = r
-                return r
-            else:
-                return 0 # impossible!
-        elif pattern[j] == '?':
-            var p1 = pattern[0..<j] & '.'
-            var c1 = possibilities(p1, j, hintSlice, brokenCounter)
-            
-            p1[j] = '#'
-            var c2 = possibilities(p1, j, hintSlice, brokenCounter)
-            
-            memoTable[(pattern, pslice, hintSlice, counterSeq)] = c1 + c2
-            return c1 + c2
+    for i in countdown(pslice.int, hint - 1):
+        var isMatch = true
+        for i in (i - hint + 1)..<(i + 1):
+            isMatch = isMatch and not (pattern[i] == '.')
+        isMatch = isMatch and not (i - hint + 1 > 0 and pattern[i - hint] == '#')
+        isMatch = isMatch and not (i + 1 < pattern.len and pattern[i + 1] == '#')
 
-    # make sure the counter and the hint match here.
-    return possibilities(pattern, -1, hintSlice, brokenCounter)
+        if isMatch:
+            res += possibilities(pattern, (i - hint - 1).int16, hintSlice - 1)
+
+        if pattern[i] == '#':
+            break
+
+    memoTable[(pslice, hintSlice)] = res
+    return res
 
 proc duplicate(pattern: string, hints: seq[uint8]): (string, seq[uint8]) =
     var patfive = ""
@@ -76,7 +66,7 @@ proc run(s: string): string =
         var j = duplicate(i[0], i[1])
         hints = j[1]
         memoTable.clear()
-        var p = possibilities(j[0], (j[0].len-1).int16, j[1].len.uint8, 0)
+        var p = possibilities(j[0], (j[0].len-1).int16, j[1].len.uint8)
         res += p
 
     return $res
